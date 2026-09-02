@@ -1,7 +1,5 @@
 ---
 title: "BIOS 667 Hands-On Session 1"
-subtitle: "From raw longitudinal data to valid inference (Ch. 1-4)"
-author: "David Zhang"
 format:
   live-html:
     toc: true
