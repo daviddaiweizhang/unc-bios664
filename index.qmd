@@ -1,0 +1,822 @@
+---
+title: "BIOS 667 Hands-On Session 1"
+subtitle: "From raw longitudinal data to valid inference (Ch. 1-4)"
+author: "David Zhang"
+format:
+  live-html:
+    toc: true
+    include-after-body:
+      text: |
+        <script>
+        // "Run all above": fill every earlier code box with its correct code
+        // (exercise boxes get their Solution code) and run them, top to bottom.
+        (function() {
+          var POLL = 25;          // ms between readiness polls
+          var QUIET = 5;          // consecutive idle polls that mean "settled"
+          var MAX_START = 10000;  // ms to wait for a click to start a run
+          var MAX_RUN = 150000;   // ms cap on a single cell
+          var DNONE = /(^|\s)d-none(\s|$)/;
+
+          function allCells() {
+            return Array.prototype.slice.call(
+              document.querySelectorAll("div.cell[data-caption]"));
+          }
+          function liveCells() {
+            return allCells().filter(function(c) { return c.querySelector(".cm-content"); });
+          }
+          function viewOf(cell) {
+            return cell.querySelector(".cm-content").cmView.view;
+          }
+          // The cell's own source, decoded from the payload the extension embeds.
+          // Reading it here (rather than from the editor at startup) means a
+          // student's edits can never be mistaken for the original code.
+          function sourceCode(cell) {
+            var s = cell.querySelector('script[type$="-contents"]');
+            if (!s) return null;
+            try {
+              var bin = atob(s.textContent.replace(/\s+/g, ""));
+              var bytes = Uint8Array.from(bin, function(ch) { return ch.charCodeAt(0); });
+              return JSON.parse(new TextDecoder().decode(bytes)).code;
+            } catch (e) { return null; }
+          }
+          // Exercise cells carry data-exercise, so the solution is matched by id
+          // rather than by document position.
+          function solutionCode(cell) {
+            var id = cell.getAttribute("data-exercise");
+            if (!id) return null;
+            var code = document.querySelector(
+              '.exercise-solution[data-exercise="' + id + '"] pre code');
+            return code ? code.textContent.replace(/\n$/, "") : null;
+          }
+          function correctCode(cell) {
+            return solutionCode(cell) || sourceCode(cell);
+          }
+
+          // Completion tracking. A cell's eval indicator loses d-none while it
+          // runs and regains it when it stops, but those windows can be under
+          // 20 ms, so polling the class misses them entirely. A MutationObserver
+          // sees every transition, and counting the hidden -> shown ones gives a
+          // monotone tally of how many times this cell has started running.
+          var seen = new WeakMap();
+          function track(cell) {
+            if (seen.has(cell)) return seen.get(cell);
+            var spinner = cell.querySelector(".exercise-editor-eval-indicator");
+            var s = { starts: 0, spinner: spinner };
+            seen.set(cell, s);
+            if (spinner) {
+              new MutationObserver(function(recs) {
+                recs.forEach(function(r) {
+                  if (DNONE.test(r.oldValue || "")) s.starts++;
+                });
+              }).observe(spinner, { attributes: true, attributeFilter: ["class"],
+                                    attributeOldValue: true });
+            }
+            return s;
+          }
+          function anyBusy() {
+            return Array.prototype.some.call(
+              document.querySelectorAll(".exercise-editor-eval-indicator"),
+              function(sp) { return !DNONE.test(sp.getAttribute("class") || ""); });
+          }
+          // Run one cell and resolve once it has both started and gone quiet.
+          // Exercise cells evaluate twice per click, so we require a run of
+          // consecutive idle polls rather than the first idle reading.
+          function runCell(cell) {
+            var s = track(cell);
+            var before = s.starts;
+            var btn = cell.querySelector('a[aria-label="Run Code"]');
+            if (btn) btn.click();
+            return new Promise(function(resolve) {
+              var t0 = Date.now(), quiet = 0;
+              (function poll() {
+                var waited = Date.now() - t0;
+                var began = !s.spinner || s.starts > before;
+                quiet = (began && !anyBusy()) ? quiet + 1 : 0;
+                if (quiet >= QUIET || waited > MAX_RUN ||
+                    (!began && waited > MAX_START)) { resolve(); return; }
+                setTimeout(poll, POLL);
+              })();
+            });
+          }
+
+          var running = false;
+          function setBusy(on) {
+            running = on;
+            Array.prototype.forEach.call(
+              document.querySelectorAll('a[aria-label="Run all above"]'),
+              function(a) { a.classList.toggle("disabled", on); });
+          }
+          async function runAllAbove(cell) {
+            if (running) return;
+            setBusy(true);
+            var label = cell.querySelector(
+              'a[aria-label="Run all above"] .btn-label-exercise-editor');
+            var text = label ? label.textContent : null;
+            try {
+              var cells = liveCells();
+              var stop = cells.indexOf(cell);
+              for (var j = 0; j < stop; j++) {
+                if (label) label.textContent = "Running " + (j + 1) + "/" + stop;
+                var code = correctCode(cells[j]);
+                if (code !== null) {
+                  var v = viewOf(cells[j]);
+                  v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: code } });
+                }
+                await runCell(cells[j]);
+              }
+            } finally {
+              if (label) label.textContent = text;
+              setBusy(false);
+            }
+          }
+
+          function addButton(cell) {
+            var startOver = cell.querySelector('a[aria-label="Start Over"]');
+            var grp = startOver ? startOver.parentElement
+                                : cell.querySelector(".btn-group-exercise-editor");
+            if (!grp || grp.querySelector('[aria-label="Run all above"]')) return;
+            var a = document.createElement("a");
+            a.className = "d-flex align-items-center gap-1 btn btn-exercise-editor " +
+                          "btn-outline-dark btn-sm text-nowrap";
+            a.setAttribute("role", "button");
+            a.tabIndex = 0;
+            a.setAttribute("aria-label", "Run all above");
+            var span = document.createElement("span");
+            span.className = "btn-label-exercise-editor";
+            span.textContent = "Run all above";
+            a.appendChild(span);
+            a.addEventListener("click", function() { runAllAbove(cell); });
+            grp.prepend(a);
+          }
+          // Only offer the button once webR is live: every cell has an editor
+          // and every Run Code button has come out of its disabled state.
+          function init() {
+            var cells = liveCells();
+            var runs = document.querySelectorAll('a[aria-label="Run Code"]');
+            var ready = cells.length === allCells().length && runs.length === cells.length &&
+              Array.prototype.every.call(runs, function(r) {
+                return !r.classList.contains("disabled");
+              });
+            if (!ready) { setTimeout(init, 250); return; }
+            cells.forEach(function(c, i) {
+              track(c);
+              if (i > 0) addButton(c);
+            });
+          }
+          init();
+        })();
+        </script>
+engine: knitr
+webr:
+  packages:
+    - dplyr
+    - tidyr
+    - ggplot2
+    - nlme
+  resources:
+    - data/dental.txt
+  cell-options:
+    timelimit: 120
+    fig-width: 8
+    fig-height: 5
+live:
+  show-hints: true
+  show-solutions: true
+---
+
+{{< include _extensions/r-wasm/live/_knitr.qmd >}}
+
+## How this page works
+
+Every gray box below is a live R console running **in your browser**. Nothing is
+installed on your computer. When the page finishes loading (the status line under
+the first box reads "Run code"), you can type in any box and press
+**Run Code** (or Ctrl/Cmd + Enter).
+
+Follow-along boxes are pre-filled: run them and read them. **Exercise** boxes
+give you instructions and `NULL` placeholders; replace each `NULL` with your
+own code, trying hints before the solution. Nothing runs until you click, and later boxes use objects
+made by earlier ones, so **run the boxes top to bottom**.
+
+Later boxes use the objects your own code creates, so an exercise must succeed
+before you move on. Stuck, or joining late? Every box after the first has a
+**Run all above** button: it fills every earlier box with its correct code
+(exercises get their solution) and runs them all, so you can always catch up to
+the class in one click. It does not run the box itself, and it appears only once
+the page has finished loading.
+
+If you did not run the pre-class test from the email, do it now:
+
+```{webr}
+#| caption: "[0A] Test cell: run me first"
+R.version.string
+plot(1:10, main = "If you can see this plot, you are ready")
+```
+
+::: {.callout-warning}
+If the box never becomes runnable, or the plot does not appear: reload the page
+once, and if it still fails, raise your hand. You can pair up with a neighbor for
+today; the page keeps working on any modern browser and on tablets.
+:::
+
+Prefer your own R or RStudio instead? Download the script version of this
+session, [HandsOn_Session1.R](HandsOn_Session1.R){download="HandsOn_Session1.R"},
+which contains the same code, the exercise prompts, and the worked solutions
+(it fetches the dataset for you on first run).
+
+**Notation for today** (all introduced in Ch. 1-4): $Y_{ij}$ is the response for
+subject $i$ at occasion $j$, with $N$ subjects and $n_i$ occasions each. The mean
+model is $E(Y_{ij}) = X_{ij}\beta$, and the covariance of the response vector is
+$\operatorname{Cov}(\mathbf{Y}_i) = \Sigma_i$.
+
+# Problem 1: The dental growth data
+
+Twenty-seven children, each measured at ages 8, 10, 12 and 14 (Potthoff and
+Roy, 1964), the running example of FLW Ch. 5, 7 and 8. Six sections take it from
+a raw text file to a defensible inference, and then break it on purpose to watch
+a missing-data mechanism create bias.
+
+## Section 1: Load and reshape the data
+
+The dental growth data (Potthoff and Roy, 1964) is the running example of
+FLW Ch. 5, 7, and 8. The file is already loaded into this page's virtual
+filesystem at `data/dental.txt`.
+
+About the raw file:
+
+- the first 27 lines are a **comment header**, not data, and
+- the data is in **wide** format: one row per child, one column per age.
+
+Run the follow-along cell:
+
+```{webr}
+#| caption: "[1A] Follow along: load the raw (wide) data"
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(nlme)
+
+dental_raw <- read.table("data/dental.txt", header = FALSE, skip = 27,
+                         col.names = c("id", "gender",
+                                       "age8", "age10", "age12", "age14"))
+head(dental_raw)
+```
+
+```{webr}
+#| caption: "[1B] Follow along: how many children of each gender?"
+table(dental_raw$gender)
+```
+
+### Task 1: wide to long
+
+Most longitudinal tools in R expect **long** format: one row per (child, age)
+pair, that is, one row per $Y_{ij}$. Write the reshape yourself.
+
+```{webr}
+#| exercise: ex_reshape
+#| envir: global
+#| caption: "[1C] Task 1: wide to long"
+# Reshape dental_raw from wide to long with pivot_longer():
+#   - gather the four measurement columns (age8, age10, age12, age14)
+#   - their names should go into a column called "visit"
+#   - their values should go into a column called "distance"
+# Assign the result to `dental_long`.
+
+# Replace NULL with your code:
+dental_long <- NULL
+
+head(dental_long, 8)
+```
+
+::: {.hint exercise="ex_reshape"}
+::: {.callout-note collapse="false"}
+## Hint 1
+
+The skeleton is `dental_long <- dental_raw |> pivot_longer(cols = ..., names_to = ..., values_to = ...)`.
+Select the four measurement columns with `starts_with("age")`.
+:::
+:::
+
+::: {.hint exercise="ex_reshape"}
+::: {.callout-note collapse="false"}
+## Hint 2
+
+```r
+dental_long <- dental_raw |>
+  pivot_longer(cols = starts_with("age"),
+               names_to = ______,
+               values_to = ______)
+```
+
+Both blanks are quoted column names.
+:::
+:::
+
+::: {.solution exercise="ex_reshape"}
+::: {.callout-tip collapse="false"}
+## Solution
+
+```r
+dental_long <- dental_raw |>
+  pivot_longer(cols = starts_with("age"),
+               names_to = "visit",
+               values_to = "distance")
+
+head(dental_long, 8)
+```
+
+Each child now contributes 4 rows, so `dental_long` has $27 \times 4 = 108$ rows.
+:::
+:::
+
+Now polish YOUR `dental_long` into the analysis data `dental`: two cosmetic
+steps you do not need to write yourself, turning `"age8"` into the number 8 and
+giving `gender` readable labels. This box only works once Task 1 has run.
+
+```{webr}
+#| caption: "[1D] Follow along: tidy the long data (numeric age, labeled gender)"
+dental <- dental_long |>
+  mutate(age = as.numeric(gsub("age", "", visit)),
+         gender = factor(gender, levels = c("F", "M"),
+                         labels = c("Girl", "Boy")))
+nrow(dental)
+```
+
+::: {.callout-note}
+## Checkpoint 1
+
+1. Why does `read.table()` need `skip = 27` here? What would happen without it?
+2. Give one concrete reason long format is preferred for modeling.
+:::
+
+## Section 2: See the data before modeling it
+
+### The spaghetti plot
+
+Run the cell as given. Two pieces carry the statistical content: `group = id`
+connects the points belonging to the same child, the visual analog of "rows
+sharing an `id` are not independent", and `stat_summary(fun = mean)` lays one
+mean curve per gender over the individual trajectories.
+
+```{webr}
+#| caption: "[2A] Follow along: spaghetti plot with group means"
+ggplot(dental, aes(x = age, y = distance, group = id, color = gender)) +
+  geom_line(alpha = 0.4) +
+  stat_summary(aes(group = gender), fun = mean,
+               geom = "line", linewidth = 1.3) +
+  labs(title = "Dental growth: individual trajectories and group means",
+       x = "Age (years)", y = "Distance (mm)") +
+  theme_minimal()
+```
+
+::: {.callout-note}
+## Checkpoint 2
+
+Look at the plot and answer in plain words:
+
+1. What is the overall growth pattern, and do boys and girls look different?
+2. "Tracking": do children keep their rank over time? What feature of the plot
+   tells you?
+3. Which looks bigger here: variability *between* children or *within* a child
+   over time?
+:::
+
+## Section 3: Quantify the correlation
+
+### Task 3: the correlation matrix
+
+The wide format earns its keep here: each age is a column, so the whole
+$4 \times 4$ correlation matrix across occasions is one function call.
+
+```{webr}
+#| exercise: ex_cor
+#| envir: global
+#| caption: "[3A] Task 3: the correlation matrix"
+# Compute the correlation matrix of the four measurement columns of
+# dental_raw (age8, age10, age12, age14), rounded to 2 decimal places.
+# Assign it to `cor_mat`.
+
+# Replace NULL with your code:
+cor_mat <- NULL
+
+cor_mat
+```
+
+::: {.hint exercise="ex_cor"}
+::: {.callout-note collapse="false"}
+## Hint 1
+
+`cor()` applied to a data frame with several numeric columns returns the full
+correlation matrix. Select the four columns by name from `dental_raw`, and wrap
+the result in `round(..., 2)`.
+:::
+:::
+
+::: {.hint exercise="ex_cor"}
+::: {.callout-note collapse="false"}
+## Hint 2
+
+```r
+cor_mat <- round(cor(dental_raw[, c(______)]), 2)
+```
+
+The blank is a vector of four quoted column names.
+:::
+:::
+
+::: {.solution exercise="ex_cor"}
+::: {.callout-tip collapse="false"}
+## Solution
+
+```r
+cor_mat <- round(cor(dental_raw[, c("age8", "age10", "age12", "age14")]), 2)
+cor_mat
+```
+:::
+:::
+
+Now run the follow-along heatmap. Note the orientation: the top-left cell is the
+(age8, age8) entry, exactly as the matrix prints.
+
+```{webr}
+#| caption: "[3B] Follow along: correlation heatmap (printed-matrix orientation)"
+cor_mat <- round(cor(dental_raw[, c("age8", "age10", "age12", "age14")]), 2)
+cor_long <- as.data.frame(as.table(cor_mat))
+names(cor_long) <- c("row", "col", "r")
+
+ggplot(cor_long, aes(x = col, y = row, fill = r)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = sprintf("%.2f", r)), size = 4) +
+  scale_y_discrete(limits = rev(levels(cor_long$row))) +
+  scale_fill_gradient(low = "white", high = "#4B9CD3", limits = c(0, 1)) +
+  labs(title = "Correlation of dental distance across ages",
+       x = NULL, y = NULL) +
+  theme_minimal()
+```
+
+::: {.callout-note}
+## Checkpoint 3
+
+1. How strong is the within-child correlation, roughly?
+2. Recall the two working patterns from Ch. 2: compound symmetry (one common
+   correlation at every lag) and AR(1) (correlation decays geometrically with
+   lag). Which does this matrix resemble more?
+3. What does your answer suggest for the model we fit next?
+:::
+
+## Section 4: Why OLS is not enough
+
+OLS treats all 108 rows as independent. We just measured correlations around
+0.6 to 0.8, so that assumption is plainly false. The mean model can still be
+right, and $\hat\beta_{\text{OLS}}$ is still unbiased, but the reported standard
+errors are computed under the wrong covariance, so the *inference* is invalid.
+
+### Task 4: fit both models
+
+This is the model-fitting skill of the day, so you write both calls yourself.
+The mean model is the same both times: distance depends on age and gender.
+
+```{webr}
+#| exercise: ex_gls
+#| envir: global
+#| caption: "[4A] Task 4: fit both models"
+# 1. Fit the mean model  distance ~ age + gender  by OLS with lm().
+#    Call the fit `ols`.
+# 2. Fit the SAME mean model with gls() from nlme, adding a
+#    compound-symmetry correlation within each child (grouping variable: id).
+#    Call the fit `gls_cs`. The last line prints its coefficient table.
+
+# Replace each NULL with your code:
+ols <- NULL
+gls_cs <- NULL
+
+if (is.null(ols) || is.null(gls_cs)) stop("Replace the NULLs above with your code.")
+summary(gls_cs)$tTable
+```
+
+::: {.hint exercise="ex_gls"}
+::: {.callout-note collapse="false"}
+## Hint 1
+
+`gls()` takes the same formula and `data` as `lm()`, plus a `correlation`
+argument. Compound symmetry within child is `corCompSymm(form = ~ 1 | id)`.
+:::
+:::
+
+::: {.hint exercise="ex_gls"}
+::: {.callout-note collapse="false"}
+## Hint 2
+
+```r
+ols <- lm(distance ~ age + gender, data = dental)
+
+gls_cs <- gls(distance ~ age + gender, data = dental,
+              correlation = ______)
+
+summary(gls_cs)$tTable
+```
+
+The blank is the `corCompSymm(...)` call. Pass the grouping formula as the
+**named** `form` argument: if you write `corCompSymm(~ 1 | id)` without
+`form =`, the formula lands in the wrong argument slot and **no** working
+correlation is fit, silently.
+:::
+:::
+
+::: {.solution exercise="ex_gls"}
+::: {.callout-tip collapse="false"}
+## Solution
+
+```r
+ols <- lm(distance ~ age + gender, data = dental)
+
+gls_cs <- gls(distance ~ age + gender, data = dental,
+              correlation = corCompSymm(form = ~ 1 | id))
+
+summary(gls_cs)$tTable
+```
+:::
+:::
+
+Now compare the standard errors of your two fits side by side:
+
+```{webr}
+#| caption: "[4B] Follow along: the SE comparison"
+se_ols <- coef(summary(ols))[, "Std. Error"]
+se_gls <- summary(gls_cs)$tTable[, "Std.Error"]
+round(cbind(OLS = se_ols, GLS_CS = se_gls, ratio = se_gls / se_ols), 3)
+```
+
+```{webr}
+#| caption: "[4C] Follow along: the estimated within-child correlation"
+coef(gls_cs$modelStruct$corStruct, unconstrained = FALSE)
+```
+
+::: {.callout-note}
+## Checkpoint 4: the punchline of the whole session
+
+Look at the `ratio` column.
+
+1. Which coefficient's standard error got **larger** once correlation was
+   modeled, and which got **smaller**?
+2. Explain both directions. (Hint: gender is constant within a child; age varies
+   within a child.)
+3. Complete the sentence: "Ignoring positive within-subject correlation makes
+   OLS standard errors ______."
+:::
+
+## Section 5: ML vs REML, and a real test
+
+Ch. 4 gives us two likelihood-based estimators. **REML** corrects the downward
+bias of ML variance estimates (the same idea as dividing a sample variance by
+$n - p$ instead of $n$) and is the default for reported fits. But REML
+log-likelihoods of models with **different mean structures are not comparable**,
+so a likelihood ratio test comparing mean models must use **ML**.
+
+Question from the spaghetti plot: do boys and girls grow at different **rates**?
+That is the `age:gender` interaction.
+
+### Task 5: LRT for the interaction
+
+You know every ingredient from Task 4, and the one new decision is the
+estimation method.
+
+```{webr}
+#| exercise: ex_lrt
+#| envir: global
+#| caption: "[5A] Task 5: LRT for the interaction"
+# 1. Fit the additive model      distance ~ age + gender   with gls(),
+#    compound-symmetry correlation within child, and THE METHOD THAT MAKES
+#    MEAN-MODEL LIKELIHOODS COMPARABLE. Call it `m_add`.
+# 2. Fit the interaction model   distance ~ age * gender   the same way.
+#    Call it `m_int`.
+# The last line compares the two fits: the likelihood ratio test.
+
+# Replace each NULL with your code:
+m_add <- NULL
+m_int <- NULL
+
+if (is.null(m_add) || is.null(m_int)) stop("Replace the NULLs above with your code.")
+anova(m_add, m_int)
+```
+
+::: {.hint exercise="ex_lrt"}
+::: {.callout-note collapse="false"}
+## Hint 1
+
+The method is ML, requested with `method = "ML"` in **both** `gls()` calls.
+`distance ~ age * gender` expands to age, gender, and age:gender.
+:::
+:::
+
+::: {.hint exercise="ex_lrt"}
+::: {.callout-note collapse="false"}
+## Hint 2
+
+```r
+m_add <- gls(distance ~ age + gender, data = dental,
+             correlation = corCompSymm(form = ~ 1 | id), method = ______)
+
+m_int <- gls(distance ~ ______, data = dental,
+             correlation = corCompSymm(form = ~ 1 | id), method = ______)
+
+anova(m_add, m_int)
+```
+:::
+:::
+
+::: {.solution exercise="ex_lrt"}
+::: {.callout-tip collapse="false"}
+## Solution
+
+```r
+m_add <- gls(distance ~ age + gender, data = dental,
+             correlation = corCompSymm(form = ~ 1 | id), method = "ML")
+
+m_int <- gls(distance ~ age * gender, data = dental,
+             correlation = corCompSymm(form = ~ 1 | id), method = "ML")
+
+anova(m_add, m_int)
+```
+
+The LRT statistic is about 6.2 on 1 df, p = 0.013: the growth rates differ.
+:::
+:::
+
+Having chosen the mean model with ML, refit it with REML (the default) to report:
+
+```{webr}
+#| caption: "[5B] Follow along: final model, REML fit for reporting"
+m_final <- gls(distance ~ age * gender, data = dental,
+               correlation = corCompSymm(form = ~ 1 | id))
+round(summary(m_final)$tTable, 3)
+```
+
+```{webr}
+#| caption: "[5C] Follow along: ML vs REML residual SD on the additive model"
+c(ML = gls(distance ~ age + gender, data = dental,
+           correlation = corCompSymm(form = ~ 1 | id), method = "ML")$sigma,
+  REML = gls_cs$sigma)
+```
+
+::: {.callout-note}
+## Checkpoint 5
+
+1. Why did the LRT require `method = "ML"`?
+2. From the REML table: what is the girls' growth rate, and what is the boys'?
+3. Which residual SD came out smaller, ML or REML, and why is that the expected
+   direction?
+:::
+
+## Section 6: A live missing-data experiment
+
+The dental data is complete, which makes it perfect for an experiment: we know
+the truth, so we can *watch* a missing-data mechanism create bias.
+
+**The story.** Suppose the age-14 visit had been skipped for every child whose
+age-12 distance was 26 mm or more (say the orthodontist referred them to a
+specialist and they left the study).
+
+```{webr}
+#| caption: "[6A] Follow along: apply the dropout rule"
+wide <- dental_raw
+wide$dropout <- wide$age12 >= 26
+table(dropout = wide$dropout)
+```
+
+::: {.callout-note}
+## Checkpoint 6a: name that mechanism
+
+Dropout depends only on the age-12 measurement, which was recorded for everyone.
+Is this MCAR, MAR, or MNAR? Vote before expanding.
+:::
+
+### Task 6: measure the damage
+
+Compare the age-14 mean computed from all 27 children (the truth, which we only
+know because this is an experiment) with the mean a naive analyst would compute
+from the completers only. `wide` has columns `age14` (numeric) and `dropout`
+(logical).
+
+```{webr}
+#| exercise: ex_mar
+#| envir: global
+#| caption: "[6B] Task 6: measure the damage"
+# 1. Compute the age-14 mean over ALL children in `wide`.
+# 2. Compute the age-14 mean over the COMPLETERS only
+#    (the children with dropout == FALSE).
+# The last line prints both; note which is smaller.
+
+# Replace each NULL with your code:
+mean_all <- NULL
+mean_completers <- NULL
+
+if (is.null(mean_all) || is.null(mean_completers)) stop("Replace the NULLs above with your code.")
+round(c(all_children = mean_all, completers_only = mean_completers), 2)
+```
+
+::: {.hint exercise="ex_mar"}
+::: {.callout-note collapse="false"}
+## Hint 1
+
+Subset a column with a logical vector: the completers' values are
+`wide$age14[!wide$dropout]`.
+:::
+:::
+
+::: {.hint exercise="ex_mar"}
+::: {.callout-note collapse="false"}
+## Hint 2
+
+```r
+mean_all <- mean(wide$age14)
+mean_completers <- mean(______)
+
+round(c(all_children = mean_all, completers_only = mean_completers), 2)
+```
+:::
+:::
+
+::: {.solution exercise="ex_mar"}
+::: {.callout-tip collapse="false"}
+## Solution
+
+```r
+mean_all <- mean(wide$age14)
+mean_completers <- mean(wide$age14[!wide$dropout])
+
+round(c(all_children = mean_all, completers_only = mean_completers), 2)
+```
+
+The completers-only mean is more than a millimeter too low (about 24.9 vs the
+true 26.1): we removed exactly the largest children.
+:::
+:::
+
+Now the Ch. 4 payoff. A likelihood-based model fit to **all available rows**
+still uses the dropouts' age 8-12 records, and those records tell the model that
+the missing children were large and growing. Watch it repair most of the damage:
+
+```{webr}
+#| caption: "[6C] Follow along: likelihood-based analysis of the observed data"
+obs <- dental |>
+  mutate(dropout = id %in% wide$id[wide$dropout]) |>
+  filter(!(dropout & age == 14))
+
+fit_obs <- gls(distance ~ age * gender, data = obs,
+               correlation = corCompSymm(form = ~ 1 | id))
+
+newdat <- data.frame(age = 14,
+                     gender = factor(c("Girl", "Boy"),
+                                     levels = c("Girl", "Boy")))
+pred <- predict(fit_obs, newdat)
+model_based <- sum(pred * prop.table(table(dental_raw$gender))[c("F", "M")])
+
+round(c(true_mean       = mean(wide$age14),
+        completers_only = mean(wide$age14[!wide$dropout]),
+        model_based     = model_based), 2)
+```
+
+::: {.callout-note}
+## Checkpoint 6b
+
+1. The mechanism is MAR, yet the completers-only mean was badly biased. Reconcile
+   those two facts.
+2. Why does the GLS fit on the observed rows do so much better?
+3. Would this repair still work if children had dropped out based on how their
+   (never-measured) age-14 distance *would have* turned out?
+:::
+
+
+# Wrap-up
+
+You reshaped a real longitudinal file, saw
+tracking in the trajectories, measured a within-child correlation near 0.6 with
+no decay pattern, fit GLS with compound symmetry and discovered that OLS
+standard errors are wrong in *both* directions, used ML for a likelihood ratio
+test (boys grow about 0.3 mm per year faster, p = 0.013) and REML for the
+reported fit, then ran a MAR experiment showing why the analysis model must use
+the variables that drive missingness.
+
+::: {.callout-note}
+## Exit questions (do these before you leave)
+
+1. Your collaborator says: "I'll just run `lm()` on the long data; with 108 rows
+   the standard errors will be fine." What one thing do you check about a
+   covariate before predicting whether its OLS SE is too small or too large?
+2. You want to compare `distance ~ age` with `distance ~ age + gender` by LRT
+   using `gls()`. What single argument must you add to both calls?
+3. A child misses a visit because the previous visit's recorded value exceeded a
+   referral threshold. MCAR, MAR, or MNAR?
+:::
+
+::: {.callout-tip}
+## Take it home
+
+- This page stays online. Your edits live only in your browser tab, so copy any
+  code you want to keep into your own notes or an R script before closing.
+- To rerun everything locally: download
+  [HandsOn_Session1.R](HandsOn_Session1.R){download="HandsOn_Session1.R"}. It
+  installs the four packages if needed, downloads `dental.txt` on first run,
+  and contains every follow-along cell, exercise prompt, and solution.
+:::

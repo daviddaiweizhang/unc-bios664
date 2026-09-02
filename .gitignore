@@ -1,0 +1,9 @@
+.DS_Store
+.quarto/
+docs/
+*.knit.md
+Rplots.pdf
+
+
+/.quarto/
+**/*.quarto_ipynb

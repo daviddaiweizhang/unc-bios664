@@ -1,0 +1,14 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - index.qmd
+  resources:
+    - HandsOn_Session1.R
+    - data/dental.txt
+
+website:
+  title: "BIOS 667 Hands-On Session 1"
+  site-url: https://daviddaiweizhang.github.io/unc-bios664/
+  repo-url: https://github.com/daviddaiweizhang/unc-bios664
+
