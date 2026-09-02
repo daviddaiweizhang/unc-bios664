@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David Zhang">
+
+<title>BIOS 667 Hands-On Session 1</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ba8f7c244c1f50cbf6c6a3aa3874339a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/live-runtime/live-runtime.js" type="module"></script>
+<link href="site_libs/quarto-contrib/live-runtime/live-runtime.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script type="module" src="site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#how-this-page-works" id="toc-how-this-page-works" class="nav-link active" data-scroll-target="#how-this-page-works">How this page works</a></li>
+  <li><a href="#problem-1-the-dental-growth-data" id="toc-problem-1-the-dental-growth-data" class="nav-link" data-scroll-target="#problem-1-the-dental-growth-data">Problem 1: The dental growth data</a>
+  <ul class="collapse">
+  <li><a href="#section-1-load-and-reshape-the-data" id="toc-section-1-load-and-reshape-the-data" class="nav-link" data-scroll-target="#section-1-load-and-reshape-the-data">Section 1: Load and reshape the data</a>
+  <ul class="collapse">
+  <li><a href="#task-1-wide-to-long" id="toc-task-1-wide-to-long" class="nav-link" data-scroll-target="#task-1-wide-to-long">Task 1: wide to long</a></li>
+  </ul></li>
+  <li><a href="#section-2-see-the-data-before-modeling-it" id="toc-section-2-see-the-data-before-modeling-it" class="nav-link" data-scroll-target="#section-2-see-the-data-before-modeling-it">Section 2: See the data before modeling it</a>
+  <ul class="collapse">
+  <li><a href="#the-spaghetti-plot" id="toc-the-spaghetti-plot" class="nav-link" data-scroll-target="#the-spaghetti-plot">The spaghetti plot</a></li>
+  </ul></li>
+  <li><a href="#section-3-quantify-the-correlation" id="toc-section-3-quantify-the-correlation" class="nav-link" data-scroll-target="#section-3-quantify-the-correlation">Section 3: Quantify the correlation</a>
+  <ul class="collapse">
+  <li><a href="#task-3-the-correlation-matrix" id="toc-task-3-the-correlation-matrix" class="nav-link" data-scroll-target="#task-3-the-correlation-matrix">Task 3: the correlation matrix</a></li>
+  </ul></li>
+  <li><a href="#section-4-why-ols-is-not-enough" id="toc-section-4-why-ols-is-not-enough" class="nav-link" data-scroll-target="#section-4-why-ols-is-not-enough">Section 4: Why OLS is not enough</a>
+  <ul class="collapse">
+  <li><a href="#task-4-fit-both-models" id="toc-task-4-fit-both-models" class="nav-link" data-scroll-target="#task-4-fit-both-models">Task 4: fit both models</a></li>
+  </ul></li>
+  <li><a href="#section-5-ml-vs-reml-and-a-real-test" id="toc-section-5-ml-vs-reml-and-a-real-test" class="nav-link" data-scroll-target="#section-5-ml-vs-reml-and-a-real-test">Section 5: ML vs REML, and a real test</a>
+  <ul class="collapse">
+  <li><a href="#task-5-lrt-for-the-interaction" id="toc-task-5-lrt-for-the-interaction" class="nav-link" data-scroll-target="#task-5-lrt-for-the-interaction">Task 5: LRT for the interaction</a></li>
+  </ul></li>
+  <li><a href="#section-6-a-live-missing-data-experiment" id="toc-section-6-a-live-missing-data-experiment" class="nav-link" data-scroll-target="#section-6-a-live-missing-data-experiment">Section 6: A live missing-data experiment</a>
+  <ul class="collapse">
+  <li><a href="#task-6-measure-the-damage" id="toc-task-6-measure-the-damage" class="nav-link" data-scroll-target="#task-6-measure-the-damage">Task 6: measure the damage</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#wrap-up" id="toc-wrap-up" class="nav-link" data-scroll-target="#wrap-up">Wrap-up</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">BIOS 667 Hands-On Session 1</h1>
+<p class="subtitle lead">From raw longitudinal data to valid inference (Ch. 1-4)</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>David Zhang </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="how-this-page-works" class="level2">
+<h2 class="anchored" data-anchor-id="how-this-page-works">How this page works</h2>
+<p>Every gray box below is a live R console running <strong>in your browser</strong>. Nothing is installed on your computer. When the page finishes loading (the status line under the first box reads “Run code”), you can type in any box and press <strong>Run Code</strong> (or Ctrl/Cmd + Enter).</p>
+<p>Follow-along boxes are pre-filled: run them and read them. <strong>Exercise</strong> boxes give you instructions and <code>NULL</code> placeholders; replace each <code>NULL</code> with your own code, trying hints before the solution. Nothing runs until you click, and later boxes use objects made by earlier ones, so <strong>run the boxes top to bottom</strong>.</p>
+<p>Later boxes use the objects your own code creates, so an exercise must succeed before you move on. Stuck, or joining late? Every box after the first has a <strong>Run all above</strong> button: it fills every earlier box with its correct code (exercises get their solution) and runs them all, so you can always catch up to the class in one click. It does not run the box itself, and it appears only once the page has finished loading.</p>
+<p>If you did not run the pre-class test from the email, do it now:</p>
+<div class="cell" data-caption="[0A] Test cell: run me first">
+<div>
+<div id="webr-1" class="exercise-cell">
+
+</div>
+<script type="webr-1-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbMEFdIFRlc3QgY2VsbDogcnVuIG1lIGZpcnN0IiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZmlnLWhlaWdodCI6IjUiLCJmaWctd2lkdGgiOiI4IiwidGltZWxpbWl0IjoiMTIwIn0sImNvZGUiOiJSLnZlcnNpb24uc3RyaW5nXG5wbG90KDE6MTAsIG1haW4gPSBcIklmIHlvdSBjYW4gc2VlIHRoaXMgcGxvdCwgeW91IGFyZSByZWFkeVwiKSJ9
+</script>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If the box never becomes runnable, or the plot does not appear: reload the page once, and if it still fails, raise your hand. You can pair up with a neighbor for today; the page keeps working on any modern browser and on tablets.</p>
+</div>
+</div>
+<p>Prefer your own R or RStudio instead? Download the script version of this session, <a href="HandsOn_Session1.R" download="HandsOn_Session1.R">HandsOn_Session1.R</a>, which contains the same code, the exercise prompts, and the worked solutions (it fetches the dataset for you on first run).</p>
+<p><strong>Notation for today</strong> (all introduced in Ch. 1-4): <span class="math inline">\(Y_{ij}\)</span> is the response for subject <span class="math inline">\(i\)</span> at occasion <span class="math inline">\(j\)</span>, with <span class="math inline">\(N\)</span> subjects and <span class="math inline">\(n_i\)</span> occasions each. The mean model is <span class="math inline">\(E(Y_{ij}) = X_{ij}\beta\)</span>, and the covariance of the response vector is <span class="math inline">\(\operatorname{Cov}(\mathbf{Y}_i) = \Sigma_i\)</span>.</p>
+</section>
+<section id="problem-1-the-dental-growth-data" class="level1">
+<h1>Problem 1: The dental growth data</h1>
+<p>Twenty-seven children, each measured at ages 8, 10, 12 and 14 (Potthoff and Roy, 1964), the running example of FLW Ch. 5, 7 and 8. Six sections take it from a raw text file to a defensible inference, and then break it on purpose to watch a missing-data mechanism create bias.</p>
+<section id="section-1-load-and-reshape-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="section-1-load-and-reshape-the-data">Section 1: Load and reshape the data</h2>
+<p>The dental growth data (Potthoff and Roy, 1964) is the running example of FLW Ch. 5, 7, and 8. The file is already loaded into this page’s virtual filesystem at <code>data/dental.txt</code>.</p>
+<p>About the raw file:</p>
+<ul>
+<li>the first 27 lines are a <strong>comment header</strong>, not data, and</li>
+<li>the data is in <strong>wide</strong> format: one row per child, one column per age.</li>
+</ul>
+<p>Run the follow-along cell:</p>
+<div class="cell" data-caption="[1A] Follow along: load the raw (wide) data">
+<div>
+<div id="webr-2" class="exercise-cell">
+
+</div>
+<script type="webr-2-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbMUFdIEZvbGxvdyBhbG9uZzogbG9hZCB0aGUgcmF3ICh3aWRlKSBkYXRhIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZmlnLWhlaWdodCI6IjUiLCJmaWctd2lkdGgiOiI4IiwidGltZWxpbWl0IjoiMTIwIn0sImNvZGUiOiJsaWJyYXJ5KGRwbHlyKVxubGlicmFyeSh0aWR5cilcbmxpYnJhcnkoZ2dwbG90MilcbmxpYnJhcnkobmxtZSlcblxuZGVudGFsX3JhdyA8LSByZWFkLnRhYmxlKFwiZGF0YS9kZW50YWwudHh0XCIsIGhlYWRlciA9IEZBTFNFLCBza2lwID0gMjcsXG4gICAgICAgICAgICAgICAgICAgICAgICAgY29sLm5hbWVzID0gYyhcImlkXCIsIFwiZ2VuZGVyXCIsXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcImFnZThcIiwgXCJhZ2UxMFwiLCBcImFnZTEyXCIsIFwiYWdlMTRcIikpXG5oZWFkKGRlbnRhbF9yYXcpIn0=
+</script>
+</div>
+</div>
+<div class="cell" data-caption="[1B] Follow along: how many children of each gender?">
+<div>
+<div id="webr-3" class="exercise-cell">
+
+</div>
+<script type="webr-3-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbMUJdIEZvbGxvdyBhbG9uZzogaG93IG1hbnkgY2hpbGRyZW4gb2YgZWFjaCBnZW5kZXI/IiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZmlnLWhlaWdodCI6IjUiLCJmaWctd2lkdGgiOiI4IiwidGltZWxpbWl0IjoiMTIwIn0sImNvZGUiOiJ0YWJsZShkZW50YWxfcmF3JGdlbmRlcikifQ==
+</script>
+</div>
+</div>
+<section id="task-1-wide-to-long" class="level3">
+<h3 class="anchored" data-anchor-id="task-1-wide-to-long">Task 1: wide to long</h3>
+<p>Most longitudinal tools in R expect <strong>long</strong> format: one row per (child, age) pair, that is, one row per <span class="math inline">\(Y_{ij}\)</span>. Write the reshape yourself.</p>
+<div class="cell" data-exercise="ex_reshape" data-envir="global" data-caption="[1C] Task 1: wide to long">
+<div>
+<div id="webr-4" class="exercise-cell">
+
+</div>
+<script type="webr-4-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbMUNdIFRhc2sgMTogd2lkZSB0byBsb25nIiwiZWRpdCI6dHJ1ZSwiZW52aXIiOiJnbG9iYWwiLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X3Jlc2hhcGUiLCJmaWctaGVpZ2h0IjoiNSIsImZpZy13aWR0aCI6IjgiLCJ0aW1lbGltaXQiOiIxMjAifSwiY29kZSI6IiMgUmVzaGFwZSBkZW50YWxfcmF3IGZyb20gd2lkZSB0byBsb25nIHdpdGggcGl2b3RfbG9uZ2VyKCk6XG4jICAgLSBnYXRoZXIgdGhlIGZvdXIgbWVhc3VyZW1lbnQgY29sdW1ucyAoYWdlOCwgYWdlMTAsIGFnZTEyLCBhZ2UxNClcbiMgICAtIHRoZWlyIG5hbWVzIHNob3VsZCBnbyBpbnRvIGEgY29sdW1uIGNhbGxlZCBcInZpc2l0XCJcbiMgICAtIHRoZWlyIHZhbHVlcyBzaG91bGQgZ28gaW50byBhIGNvbHVtbiBjYWxsZWQgXCJkaXN0YW5jZVwiXG4jIEFzc2lnbiB0aGUgcmVzdWx0IHRvIGBkZW50YWxfbG9uZ2AuXG5cbiMgUmVwbGFjZSBOVUxMIHdpdGggeW91ciBjb2RlOlxuZGVudGFsX2xvbmcgPC0gTlVMTFxuXG5oZWFkKGRlbnRhbF9sb25nLCA4KSJ9
+</script>
+</div>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_reshape">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Hint 1
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The skeleton is <code>dental_long &lt;- dental_raw |&gt; pivot_longer(cols = ..., names_to = ..., values_to = ...)</code>. Select the four measurement columns with <code>starts_with("age")</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_reshape">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Hint 2
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dental_long <span class="ot">&lt;-</span> dental_raw <span class="sc">|&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"age"</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> ______,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> ______)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Both blanks are quoted column names.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_reshape">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dental_long <span class="ot">&lt;-</span> dental_raw <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"age"</span>),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"visit"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"distance"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dental_long, <span class="dv">8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Each child now contributes 4 rows, so <code>dental_long</code> has <span class="math inline">\(27 \times 4 = 108\)</span> rows.</p>
+</div>
+</div>
+</div>
+</div>
+<p>Now polish YOUR <code>dental_long</code> into the analysis data <code>dental</code>: two cosmetic steps you do not need to write yourself, turning <code>"age8"</code> into the number 8 and giving <code>gender</code> readable labels. This box only works once Task 1 has run.</p>
+<div class="cell" data-caption="[1D] Follow along: tidy the long data (numeric age, labeled gender)">
+<div>
+<div id="webr-5" class="exercise-cell">
+
+</div>
+<script type="webr-5-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbMURdIEZvbGxvdyBhbG9uZzogdGlkeSB0aGUgbG9uZyBkYXRhIChudW1lcmljIGFnZSwgbGFiZWxlZCBnZW5kZXIpIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZmlnLWhlaWdodCI6IjUiLCJmaWctd2lkdGgiOiI4IiwidGltZWxpbWl0IjoiMTIwIn0sImNvZGUiOiJkZW50YWwgPC0gZGVudGFsX2xvbmcgfD5cbiAgbXV0YXRlKGFnZSA9IGFzLm51bWVyaWMoZ3N1YihcImFnZVwiLCBcIlwiLCB2aXNpdCkpLFxuICAgICAgICAgZ2VuZGVyID0gZmFjdG9yKGdlbmRlciwgbGV2ZWxzID0gYyhcIkZcIiwgXCJNXCIpLFxuICAgICAgICAgICAgICAgICAgICAgICAgIGxhYmVscyA9IGMoXCJHaXJsXCIsIFwiQm95XCIpKSlcbm5yb3coZGVudGFsKSJ9
+</script>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Checkpoint 1
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Why does <code>read.table()</code> need <code>skip = 27</code> here? What would happen without it?</li>
+<li>Give one concrete reason long format is preferred for modeling.</li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="section-2-see-the-data-before-modeling-it" class="level2">
+<h2 class="anchored" data-anchor-id="section-2-see-the-data-before-modeling-it">Section 2: See the data before modeling it</h2>
+<section id="the-spaghetti-plot" class="level3">
+<h3 class="anchored" data-anchor-id="the-spaghetti-plot">The spaghetti plot</h3>
+<p>Run the cell as given. Two pieces carry the statistical content: <code>group = id</code> connects the points belonging to the same child, the visual analog of “rows sharing an <code>id</code> are not independent”, and <code>stat_summary(fun = mean)</code> lays one mean curve per gender over the individual trajectories.</p>
+<div class="cell" data-caption="[2A] Follow along: spaghetti plot with group means">
+<div>
+<div id="webr-6" class="exercise-cell">
+
+</div>
+<script type="webr-6-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbMkFdIEZvbGxvdyBhbG9uZzogc3BhZ2hldHRpIHBsb3Qgd2l0aCBncm91cCBtZWFucyIsImVkaXQiOnRydWUsImV2YWwiOnRydWUsImZpZy1oZWlnaHQiOiI1IiwiZmlnLXdpZHRoIjoiOCIsInRpbWVsaW1pdCI6IjEyMCJ9LCJjb2RlIjoiZ2dwbG90KGRlbnRhbCwgYWVzKHggPSBhZ2UsIHkgPSBkaXN0YW5jZSwgZ3JvdXAgPSBpZCwgY29sb3IgPSBnZW5kZXIpKSArXG4gIGdlb21fbGluZShhbHBoYSA9IDAuNCkgK1xuICBzdGF0X3N1bW1hcnkoYWVzKGdyb3VwID0gZ2VuZGVyKSwgZnVuID0gbWVhbixcbiAgICAgICAgICAgICAgIGdlb20gPSBcImxpbmVcIiwgbGluZXdpZHRoID0gMS4zKSArXG4gIGxhYnModGl0bGUgPSBcIkRlbnRhbCBncm93dGg6IGluZGl2aWR1YWwgdHJhamVjdG9yaWVzIGFuZCBncm91cCBtZWFuc1wiLFxuICAgICAgIHggPSBcIkFnZSAoeWVhcnMpXCIsIHkgPSBcIkRpc3RhbmNlIChtbSlcIikgK1xuICB0aGVtZV9taW5pbWFsKCkifQ==
+</script>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Checkpoint 2
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Look at the plot and answer in plain words:</p>
+<ol type="1">
+<li>What is the overall growth pattern, and do boys and girls look different?</li>
+<li>“Tracking”: do children keep their rank over time? What feature of the plot tells you?</li>
+<li>Which looks bigger here: variability <em>between</em> children or <em>within</em> a child over time?</li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="section-3-quantify-the-correlation" class="level2">
+<h2 class="anchored" data-anchor-id="section-3-quantify-the-correlation">Section 3: Quantify the correlation</h2>
+<section id="task-3-the-correlation-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="task-3-the-correlation-matrix">Task 3: the correlation matrix</h3>
+<p>The wide format earns its keep here: each age is a column, so the whole <span class="math inline">\(4 \times 4\)</span> correlation matrix across occasions is one function call.</p>
+<div class="cell" data-exercise="ex_cor" data-envir="global" data-caption="[3A] Task 3: the correlation matrix">
+<div>
+<div id="webr-7" class="exercise-cell">
+
+</div>
+<script type="webr-7-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbM0FdIFRhc2sgMzogdGhlIGNvcnJlbGF0aW9uIG1hdHJpeCIsImVkaXQiOnRydWUsImVudmlyIjoiZ2xvYmFsIiwiZXZhbCI6dHJ1ZSwiZXhlcmNpc2UiOiJleF9jb3IiLCJmaWctaGVpZ2h0IjoiNSIsImZpZy13aWR0aCI6IjgiLCJ0aW1lbGltaXQiOiIxMjAifSwiY29kZSI6IiMgQ29tcHV0ZSB0aGUgY29ycmVsYXRpb24gbWF0cml4IG9mIHRoZSBmb3VyIG1lYXN1cmVtZW50IGNvbHVtbnMgb2ZcbiMgZGVudGFsX3JhdyAoYWdlOCwgYWdlMTAsIGFnZTEyLCBhZ2UxNCksIHJvdW5kZWQgdG8gMiBkZWNpbWFsIHBsYWNlcy5cbiMgQXNzaWduIGl0IHRvIGBjb3JfbWF0YC5cblxuIyBSZXBsYWNlIE5VTEwgd2l0aCB5b3VyIGNvZGU6XG5jb3JfbWF0IDwtIE5VTExcblxuY29yX21hdCJ9
+</script>
+</div>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_cor">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Hint 1
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p><code>cor()</code> applied to a data frame with several numeric columns returns the full correlation matrix. Select the four columns by name from <code>dental_raw</code>, and wrap the result in <code>round(..., 2)</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_cor">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Hint 2
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cor_mat <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">cor</span>(dental_raw[, <span class="fu">c</span>(______)]), <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The blank is a vector of four quoted column names.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_cor">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>cor_mat <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">cor</span>(dental_raw[, <span class="fu">c</span>(<span class="st">"age8"</span>, <span class="st">"age10"</span>, <span class="st">"age12"</span>, <span class="st">"age14"</span>)]), <span class="dv">2</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>cor_mat</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
+<p>Now run the follow-along heatmap. Note the orientation: the top-left cell is the (age8, age8) entry, exactly as the matrix prints.</p>
+<div class="cell" data-caption="[3B] Follow along: correlation heatmap (printed-matrix orientation)">
+<div>
+<div id="webr-8" class="exercise-cell">
+
+</div>
+<script type="webr-8-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbM0JdIEZvbGxvdyBhbG9uZzogY29ycmVsYXRpb24gaGVhdG1hcCAocHJpbnRlZC1tYXRyaXggb3JpZW50YXRpb24pIiwiZWRpdCI6dHJ1ZSwiZXZhbCI6dHJ1ZSwiZmlnLWhlaWdodCI6IjUiLCJmaWctd2lkdGgiOiI4IiwidGltZWxpbWl0IjoiMTIwIn0sImNvZGUiOiJjb3JfbWF0IDwtIHJvdW5kKGNvcihkZW50YWxfcmF3WywgYyhcImFnZThcIiwgXCJhZ2UxMFwiLCBcImFnZTEyXCIsIFwiYWdlMTRcIildKSwgMilcbmNvcl9sb25nIDwtIGFzLmRhdGEuZnJhbWUoYXMudGFibGUoY29yX21hdCkpXG5uYW1lcyhjb3JfbG9uZykgPC0gYyhcInJvd1wiLCBcImNvbFwiLCBcInJcIilcblxuZ2dwbG90KGNvcl9sb25nLCBhZXMoeCA9IGNvbCwgeSA9IHJvdywgZmlsbCA9IHIpKSArXG4gIGdlb21fdGlsZShjb2xvciA9IFwid2hpdGVcIikgK1xuICBnZW9tX3RleHQoYWVzKGxhYmVsID0gc3ByaW50ZihcIiUuMmZcIiwgcikpLCBzaXplID0gNCkgK1xuICBzY2FsZV95X2Rpc2NyZXRlKGxpbWl0cyA9IHJldihsZXZlbHMoY29yX2xvbmckcm93KSkpICtcbiAgc2NhbGVfZmlsbF9ncmFkaWVudChsb3cgPSBcIndoaXRlXCIsIGhpZ2ggPSBcIiM0QjlDRDNcIiwgbGltaXRzID0gYygwLCAxKSkgK1xuICBsYWJzKHRpdGxlID0gXCJDb3JyZWxhdGlvbiBvZiBkZW50YWwgZGlzdGFuY2UgYWNyb3NzIGFnZXNcIixcbiAgICAgICB4ID0gTlVMTCwgeSA9IE5VTEwpICtcbiAgdGhlbWVfbWluaW1hbCgpIn0=
+</script>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Checkpoint 3
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>How strong is the within-child correlation, roughly?</li>
+<li>Recall the two working patterns from Ch. 2: compound symmetry (one common correlation at every lag) and AR(1) (correlation decays geometrically with lag). Which does this matrix resemble more?</li>
+<li>What does your answer suggest for the model we fit next?</li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="section-4-why-ols-is-not-enough" class="level2">
+<h2 class="anchored" data-anchor-id="section-4-why-ols-is-not-enough">Section 4: Why OLS is not enough</h2>
+<p>OLS treats all 108 rows as independent. We just measured correlations around 0.6 to 0.8, so that assumption is plainly false. The mean model can still be right, and <span class="math inline">\(\hat\beta_{\text{OLS}}\)</span> is still unbiased, but the reported standard errors are computed under the wrong covariance, so the <em>inference</em> is invalid.</p>
+<section id="task-4-fit-both-models" class="level3">
+<h3 class="anchored" data-anchor-id="task-4-fit-both-models">Task 4: fit both models</h3>
+<p>This is the model-fitting skill of the day, so you write both calls yourself. The mean model is the same both times: distance depends on age and gender.</p>
+<div class="cell" data-exercise="ex_gls" data-envir="global" data-caption="[4A] Task 4: fit both models">
+<div>
+<div id="webr-9" class="exercise-cell">
+
+</div>
+<script type="webr-9-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbNEFdIFRhc2sgNDogZml0IGJvdGggbW9kZWxzIiwiZWRpdCI6dHJ1ZSwiZW52aXIiOiJnbG9iYWwiLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X2dscyIsImZpZy1oZWlnaHQiOiI1IiwiZmlnLXdpZHRoIjoiOCIsInRpbWVsaW1pdCI6IjEyMCJ9LCJjb2RlIjoiIyAxLiBGaXQgdGhlIG1lYW4gbW9kZWwgIGRpc3RhbmNlIH4gYWdlICsgZ2VuZGVyICBieSBPTFMgd2l0aCBsbSgpLlxuIyAgICBDYWxsIHRoZSBmaXQgYG9sc2AuXG4jIDIuIEZpdCB0aGUgU0FNRSBtZWFuIG1vZGVsIHdpdGggZ2xzKCkgZnJvbSBubG1lLCBhZGRpbmcgYVxuIyAgICBjb21wb3VuZC1zeW1tZXRyeSBjb3JyZWxhdGlvbiB3aXRoaW4gZWFjaCBjaGlsZCAoZ3JvdXBpbmcgdmFyaWFibGU6IGlkKS5cbiMgICAgQ2FsbCB0aGUgZml0IGBnbHNfY3NgLiBUaGUgbGFzdCBsaW5lIHByaW50cyBpdHMgY29lZmZpY2llbnQgdGFibGUuXG5cbiMgUmVwbGFjZSBlYWNoIE5VTEwgd2l0aCB5b3VyIGNvZGU6XG5vbHMgPC0gTlVMTFxuZ2xzX2NzIDwtIE5VTExcblxuaWYgKGlzLm51bGwob2xzKSB8fCBpcy5udWxsKGdsc19jcykpIHN0b3AoXCJSZXBsYWNlIHRoZSBOVUxMcyBhYm92ZSB3aXRoIHlvdXIgY29kZS5cIilcbnN1bW1hcnkoZ2xzX2NzKSR0VGFibGUifQ==
+</script>
+</div>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_gls">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Hint 1
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p><code>gls()</code> takes the same formula and <code>data</code> as <code>lm()</code>, plus a <code>correlation</code> argument. Compound symmetry within child is <code>corCompSymm(form = ~ 1 | id)</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_gls">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Hint 2
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(distance <span class="sc">~</span> age <span class="sc">+</span> gender, <span class="at">data =</span> dental)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>gls_cs <span class="ot">&lt;-</span> <span class="fu">gls</span>(distance <span class="sc">~</span> age <span class="sc">+</span> gender, <span class="at">data =</span> dental,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">correlation =</span> ______)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gls_cs)<span class="sc">$</span>tTable</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The blank is the <code>corCompSymm(...)</code> call. Pass the grouping formula as the <strong>named</strong> <code>form</code> argument: if you write <code>corCompSymm(~ 1 | id)</code> without <code>form =</code>, the formula lands in the wrong argument slot and <strong>no</strong> working correlation is fit, silently.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_gls">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ols <span class="ot">&lt;-</span> <span class="fu">lm</span>(distance <span class="sc">~</span> age <span class="sc">+</span> gender, <span class="at">data =</span> dental)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>gls_cs <span class="ot">&lt;-</span> <span class="fu">gls</span>(distance <span class="sc">~</span> age <span class="sc">+</span> gender, <span class="at">data =</span> dental,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">correlation =</span> <span class="fu">corCompSymm</span>(<span class="at">form =</span> <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> id))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gls_cs)<span class="sc">$</span>tTable</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
+<p>Now compare the standard errors of your two fits side by side:</p>
+<div class="cell" data-caption="[4B] Follow along: the SE comparison">
+<div>
+<div id="webr-10" class="exercise-cell">
+
+</div>
+<script type="webr-10-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbNEJdIEZvbGxvdyBhbG9uZzogdGhlIFNFIGNvbXBhcmlzb24iLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJmaWctaGVpZ2h0IjoiNSIsImZpZy13aWR0aCI6IjgiLCJ0aW1lbGltaXQiOiIxMjAifSwiY29kZSI6InNlX29scyA8LSBjb2VmKHN1bW1hcnkob2xzKSlbLCBcIlN0ZC4gRXJyb3JcIl1cbnNlX2dscyA8LSBzdW1tYXJ5KGdsc19jcykkdFRhYmxlWywgXCJTdGQuRXJyb3JcIl1cbnJvdW5kKGNiaW5kKE9MUyA9IHNlX29scywgR0xTX0NTID0gc2VfZ2xzLCByYXRpbyA9IHNlX2dscyAvIHNlX29scyksIDMpIn0=
+</script>
+</div>
+</div>
+<div class="cell" data-caption="[4C] Follow along: the estimated within-child correlation">
+<div>
+<div id="webr-11" class="exercise-cell">
+
+</div>
+<script type="webr-11-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbNENdIEZvbGxvdyBhbG9uZzogdGhlIGVzdGltYXRlZCB3aXRoaW4tY2hpbGQgY29ycmVsYXRpb24iLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJmaWctaGVpZ2h0IjoiNSIsImZpZy13aWR0aCI6IjgiLCJ0aW1lbGltaXQiOiIxMjAifSwiY29kZSI6ImNvZWYoZ2xzX2NzJG1vZGVsU3RydWN0JGNvclN0cnVjdCwgdW5jb25zdHJhaW5lZCA9IEZBTFNFKSJ9
+</script>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Checkpoint 4: the punchline of the whole session
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Look at the <code>ratio</code> column.</p>
+<ol type="1">
+<li>Which coefficient’s standard error got <strong>larger</strong> once correlation was modeled, and which got <strong>smaller</strong>?</li>
+<li>Explain both directions. (Hint: gender is constant within a child; age varies within a child.)</li>
+<li>Complete the sentence: “Ignoring positive within-subject correlation makes OLS standard errors ______.”</li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="section-5-ml-vs-reml-and-a-real-test" class="level2">
+<h2 class="anchored" data-anchor-id="section-5-ml-vs-reml-and-a-real-test">Section 5: ML vs REML, and a real test</h2>
+<p>Ch. 4 gives us two likelihood-based estimators. <strong>REML</strong> corrects the downward bias of ML variance estimates (the same idea as dividing a sample variance by <span class="math inline">\(n - p\)</span> instead of <span class="math inline">\(n\)</span>) and is the default for reported fits. But REML log-likelihoods of models with <strong>different mean structures are not comparable</strong>, so a likelihood ratio test comparing mean models must use <strong>ML</strong>.</p>
+<p>Question from the spaghetti plot: do boys and girls grow at different <strong>rates</strong>? That is the <code>age:gender</code> interaction.</p>
+<section id="task-5-lrt-for-the-interaction" class="level3">
+<h3 class="anchored" data-anchor-id="task-5-lrt-for-the-interaction">Task 5: LRT for the interaction</h3>
+<p>You know every ingredient from Task 4, and the one new decision is the estimation method.</p>
+<div class="cell" data-exercise="ex_lrt" data-envir="global" data-caption="[5A] Task 5: LRT for the interaction">
+<div>
+<div id="webr-12" class="exercise-cell">
+
+</div>
+<script type="webr-12-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbNUFdIFRhc2sgNTogTFJUIGZvciB0aGUgaW50ZXJhY3Rpb24iLCJlZGl0Ijp0cnVlLCJlbnZpciI6Imdsb2JhbCIsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhfbHJ0IiwiZmlnLWhlaWdodCI6IjUiLCJmaWctd2lkdGgiOiI4IiwidGltZWxpbWl0IjoiMTIwIn0sImNvZGUiOiIjIDEuIEZpdCB0aGUgYWRkaXRpdmUgbW9kZWwgICAgICBkaXN0YW5jZSB+IGFnZSArIGdlbmRlciAgIHdpdGggZ2xzKCksXG4jICAgIGNvbXBvdW5kLXN5bW1ldHJ5IGNvcnJlbGF0aW9uIHdpdGhpbiBjaGlsZCwgYW5kIFRIRSBNRVRIT0QgVEhBVCBNQUtFU1xuIyAgICBNRUFOLU1PREVMIExJS0VMSUhPT0RTIENPTVBBUkFCTEUuIENhbGwgaXQgYG1fYWRkYC5cbiMgMi4gRml0IHRoZSBpbnRlcmFjdGlvbiBtb2RlbCAgIGRpc3RhbmNlIH4gYWdlICogZ2VuZGVyICAgdGhlIHNhbWUgd2F5LlxuIyAgICBDYWxsIGl0IGBtX2ludGAuXG4jIFRoZSBsYXN0IGxpbmUgY29tcGFyZXMgdGhlIHR3byBmaXRzOiB0aGUgbGlrZWxpaG9vZCByYXRpbyB0ZXN0LlxuXG4jIFJlcGxhY2UgZWFjaCBOVUxMIHdpdGggeW91ciBjb2RlOlxubV9hZGQgPC0gTlVMTFxubV9pbnQgPC0gTlVMTFxuXG5pZiAoaXMubnVsbChtX2FkZCkgfHwgaXMubnVsbChtX2ludCkpIHN0b3AoXCJSZXBsYWNlIHRoZSBOVUxMcyBhYm92ZSB3aXRoIHlvdXIgY29kZS5cIilcbmFub3ZhKG1fYWRkLCBtX2ludCkifQ==
+</script>
+</div>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_lrt">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Hint 1
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The method is ML, requested with <code>method = "ML"</code> in <strong>both</strong> <code>gls()</code> calls. <code>distance ~ age * gender</code> expands to age, gender, and age:gender.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_lrt">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Hint 2
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>m_add <span class="ot">&lt;-</span> <span class="fu">gls</span>(distance <span class="sc">~</span> age <span class="sc">+</span> gender, <span class="at">data =</span> dental,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">correlation =</span> <span class="fu">corCompSymm</span>(<span class="at">form =</span> <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> id), <span class="at">method =</span> ______)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>m_int <span class="ot">&lt;-</span> <span class="fu">gls</span>(distance <span class="sc">~</span> ______, <span class="at">data =</span> dental,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">correlation =</span> <span class="fu">corCompSymm</span>(<span class="at">form =</span> <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> id), <span class="at">method =</span> ______)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(m_add, m_int)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_lrt">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>m_add <span class="ot">&lt;-</span> <span class="fu">gls</span>(distance <span class="sc">~</span> age <span class="sc">+</span> gender, <span class="at">data =</span> dental,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">correlation =</span> <span class="fu">corCompSymm</span>(<span class="at">form =</span> <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> id), <span class="at">method =</span> <span class="st">"ML"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>m_int <span class="ot">&lt;-</span> <span class="fu">gls</span>(distance <span class="sc">~</span> age <span class="sc">*</span> gender, <span class="at">data =</span> dental,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">correlation =</span> <span class="fu">corCompSymm</span>(<span class="at">form =</span> <span class="sc">~</span> <span class="dv">1</span> <span class="sc">|</span> id), <span class="at">method =</span> <span class="st">"ML"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(m_add, m_int)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The LRT statistic is about 6.2 on 1 df, p = 0.013: the growth rates differ.</p>
+</div>
+</div>
+</div>
+</div>
+<p>Having chosen the mean model with ML, refit it with REML (the default) to report:</p>
+<div class="cell" data-caption="[5B] Follow along: final model, REML fit for reporting">
+<div>
+<div id="webr-13" class="exercise-cell">
+
+</div>
+<script type="webr-13-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbNUJdIEZvbGxvdyBhbG9uZzogZmluYWwgbW9kZWwsIFJFTUwgZml0IGZvciByZXBvcnRpbmciLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJmaWctaGVpZ2h0IjoiNSIsImZpZy13aWR0aCI6IjgiLCJ0aW1lbGltaXQiOiIxMjAifSwiY29kZSI6Im1fZmluYWwgPC0gZ2xzKGRpc3RhbmNlIH4gYWdlICogZ2VuZGVyLCBkYXRhID0gZGVudGFsLFxuICAgICAgICAgICAgICAgY29ycmVsYXRpb24gPSBjb3JDb21wU3ltbShmb3JtID0gfiAxIHwgaWQpKVxucm91bmQoc3VtbWFyeShtX2ZpbmFsKSR0VGFibGUsIDMpIn0=
+</script>
+</div>
+</div>
+<div class="cell" data-caption="[5C] Follow along: ML vs REML residual SD on the additive model">
+<div>
+<div id="webr-14" class="exercise-cell">
+
+</div>
+<script type="webr-14-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbNUNdIEZvbGxvdyBhbG9uZzogTUwgdnMgUkVNTCByZXNpZHVhbCBTRCBvbiB0aGUgYWRkaXRpdmUgbW9kZWwiLCJlZGl0Ijp0cnVlLCJldmFsIjp0cnVlLCJmaWctaGVpZ2h0IjoiNSIsImZpZy13aWR0aCI6IjgiLCJ0aW1lbGltaXQiOiIxMjAifSwiY29kZSI6ImMoTUwgPSBnbHMoZGlzdGFuY2UgfiBhZ2UgKyBnZW5kZXIsIGRhdGEgPSBkZW50YWwsXG4gICAgICAgICAgIGNvcnJlbGF0aW9uID0gY29yQ29tcFN5bW0oZm9ybSA9IH4gMSB8IGlkKSwgbWV0aG9kID0gXCJNTFwiKSRzaWdtYSxcbiAgUkVNTCA9IGdsc19jcyRzaWdtYSkifQ==
+</script>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Checkpoint 5
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Why did the LRT require <code>method = "ML"</code>?</li>
+<li>From the REML table: what is the girls’ growth rate, and what is the boys’?</li>
+<li>Which residual SD came out smaller, ML or REML, and why is that the expected direction?</li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="section-6-a-live-missing-data-experiment" class="level2">
+<h2 class="anchored" data-anchor-id="section-6-a-live-missing-data-experiment">Section 6: A live missing-data experiment</h2>
+<p>The dental data is complete, which makes it perfect for an experiment: we know the truth, so we can <em>watch</em> a missing-data mechanism create bias.</p>
+<p><strong>The story.</strong> Suppose the age-14 visit had been skipped for every child whose age-12 distance was 26 mm or more (say the orthodontist referred them to a specialist and they left the study).</p>
+<div class="cell" data-caption="[6A] Follow along: apply the dropout rule">
+<div>
+<div id="webr-15" class="exercise-cell">
+
+</div>
+<script type="webr-15-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbNkFdIEZvbGxvdyBhbG9uZzogYXBwbHkgdGhlIGRyb3BvdXQgcnVsZSIsImVkaXQiOnRydWUsImV2YWwiOnRydWUsImZpZy1oZWlnaHQiOiI1IiwiZmlnLXdpZHRoIjoiOCIsInRpbWVsaW1pdCI6IjEyMCJ9LCJjb2RlIjoid2lkZSA8LSBkZW50YWxfcmF3XG53aWRlJGRyb3BvdXQgPC0gd2lkZSRhZ2UxMiA+PSAyNlxudGFibGUoZHJvcG91dCA9IHdpZGUkZHJvcG91dCkifQ==
+</script>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Checkpoint 6a: name that mechanism
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Dropout depends only on the age-12 measurement, which was recorded for everyone. Is this MCAR, MAR, or MNAR? Vote before expanding.</p>
+</div>
+</div>
+<section id="task-6-measure-the-damage" class="level3">
+<h3 class="anchored" data-anchor-id="task-6-measure-the-damage">Task 6: measure the damage</h3>
+<p>Compare the age-14 mean computed from all 27 children (the truth, which we only know because this is an experiment) with the mean a naive analyst would compute from the completers only. <code>wide</code> has columns <code>age14</code> (numeric) and <code>dropout</code> (logical).</p>
+<div class="cell" data-exercise="ex_mar" data-envir="global" data-caption="[6B] Task 6: measure the damage">
+<div>
+<div id="webr-16" class="exercise-cell">
+
+</div>
+<script type="webr-16-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbNkJdIFRhc2sgNjogbWVhc3VyZSB0aGUgZGFtYWdlIiwiZWRpdCI6dHJ1ZSwiZW52aXIiOiJnbG9iYWwiLCJldmFsIjp0cnVlLCJleGVyY2lzZSI6ImV4X21hciIsImZpZy1oZWlnaHQiOiI1IiwiZmlnLXdpZHRoIjoiOCIsInRpbWVsaW1pdCI6IjEyMCJ9LCJjb2RlIjoiIyAxLiBDb21wdXRlIHRoZSBhZ2UtMTQgbWVhbiBvdmVyIEFMTCBjaGlsZHJlbiBpbiBgd2lkZWAuXG4jIDIuIENvbXB1dGUgdGhlIGFnZS0xNCBtZWFuIG92ZXIgdGhlIENPTVBMRVRFUlMgb25seVxuIyAgICAodGhlIGNoaWxkcmVuIHdpdGggZHJvcG91dCA9PSBGQUxTRSkuXG4jIFRoZSBsYXN0IGxpbmUgcHJpbnRzIGJvdGg7IG5vdGUgd2hpY2ggaXMgc21hbGxlci5cblxuIyBSZXBsYWNlIGVhY2ggTlVMTCB3aXRoIHlvdXIgY29kZTpcbm1lYW5fYWxsIDwtIE5VTExcbm1lYW5fY29tcGxldGVycyA8LSBOVUxMXG5cbmlmIChpcy5udWxsKG1lYW5fYWxsKSB8fCBpcy5udWxsKG1lYW5fY29tcGxldGVycykpIHN0b3AoXCJSZXBsYWNlIHRoZSBOVUxMcyBhYm92ZSB3aXRoIHlvdXIgY29kZS5cIilcbnJvdW5kKGMoYWxsX2NoaWxkcmVuID0gbWVhbl9hbGwsIGNvbXBsZXRlcnNfb25seSA9IG1lYW5fY29tcGxldGVycyksIDIpIn0=
+</script>
+</div>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_mar">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Hint 1
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-20" class="callout-20-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Subset a column with a logical vector: the completers’ values are <code>wide$age14[!wide$dropout]</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex_mar">
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Hint 2
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-21" class="callout-21-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mean_all <span class="ot">&lt;-</span> <span class="fu">mean</span>(wide<span class="sc">$</span>age14)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>mean_completers <span class="ot">&lt;-</span> <span class="fu">mean</span>(______)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(<span class="at">all_children =</span> mean_all, <span class="at">completers_only =</span> mean_completers), <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex_mar">
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-22" class="callout-22-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mean_all <span class="ot">&lt;-</span> <span class="fu">mean</span>(wide<span class="sc">$</span>age14)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>mean_completers <span class="ot">&lt;-</span> <span class="fu">mean</span>(wide<span class="sc">$</span>age14[<span class="sc">!</span>wide<span class="sc">$</span>dropout])</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(<span class="at">all_children =</span> mean_all, <span class="at">completers_only =</span> mean_completers), <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The completers-only mean is more than a millimeter too low (about 24.9 vs the true 26.1): we removed exactly the largest children.</p>
+</div>
+</div>
+</div>
+</div>
+<p>Now the Ch. 4 payoff. A likelihood-based model fit to <strong>all available rows</strong> still uses the dropouts’ age 8-12 records, and those records tell the model that the missing children were large and growing. Watch it repair most of the damage:</p>
+<div class="cell" data-caption="[6C] Follow along: likelihood-based analysis of the observed data">
+<div>
+<div id="webr-17" class="exercise-cell">
+
+</div>
+<script type="webr-17-contents">
+eyJhdHRyIjp7ImNhcHRpb24iOiJbNkNdIEZvbGxvdyBhbG9uZzogbGlrZWxpaG9vZC1iYXNlZCBhbmFseXNpcyBvZiB0aGUgb2JzZXJ2ZWQgZGF0YSIsImVkaXQiOnRydWUsImV2YWwiOnRydWUsImZpZy1oZWlnaHQiOiI1IiwiZmlnLXdpZHRoIjoiOCIsInRpbWVsaW1pdCI6IjEyMCJ9LCJjb2RlIjoib2JzIDwtIGRlbnRhbCB8PlxuICBtdXRhdGUoZHJvcG91dCA9IGlkICVpbiUgd2lkZSRpZFt3aWRlJGRyb3BvdXRdKSB8PlxuICBmaWx0ZXIoIShkcm9wb3V0ICYgYWdlID09IDE0KSlcblxuZml0X29icyA8LSBnbHMoZGlzdGFuY2UgfiBhZ2UgKiBnZW5kZXIsIGRhdGEgPSBvYnMsXG4gICAgICAgICAgICAgICBjb3JyZWxhdGlvbiA9IGNvckNvbXBTeW1tKGZvcm0gPSB+IDEgfCBpZCkpXG5cbm5ld2RhdCA8LSBkYXRhLmZyYW1lKGFnZSA9IDE0LFxuICAgICAgICAgICAgICAgICAgICAgZ2VuZGVyID0gZmFjdG9yKGMoXCJHaXJsXCIsIFwiQm95XCIpLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGxldmVscyA9IGMoXCJHaXJsXCIsIFwiQm95XCIpKSlcbnByZWQgPC0gcHJlZGljdChmaXRfb2JzLCBuZXdkYXQpXG5tb2RlbF9iYXNlZCA8LSBzdW0ocHJlZCAqIHByb3AudGFibGUodGFibGUoZGVudGFsX3JhdyRnZW5kZXIpKVtjKFwiRlwiLCBcIk1cIildKVxuXG5yb3VuZChjKHRydWVfbWVhbiAgICAgICA9IG1lYW4od2lkZSRhZ2UxNCksXG4gICAgICAgIGNvbXBsZXRlcnNfb25seSA9IG1lYW4od2lkZSRhZ2UxNFshd2lkZSRkcm9wb3V0XSksXG4gICAgICAgIG1vZGVsX2Jhc2VkICAgICA9IG1vZGVsX2Jhc2VkKSwgMikifQ==
+</script>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Checkpoint 6b
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>The mechanism is MAR, yet the completers-only mean was badly biased. Reconcile those two facts.</li>
+<li>Why does the GLS fit on the observed rows do so much better?</li>
+<li>Would this repair still work if children had dropped out based on how their (never-measured) age-14 distance <em>would have</em> turned out?</li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="wrap-up" class="level1">
+<h1>Wrap-up</h1>
+<p>You reshaped a real longitudinal file, saw tracking in the trajectories, measured a within-child correlation near 0.6 with no decay pattern, fit GLS with compound symmetry and discovered that OLS standard errors are wrong in <em>both</em> directions, used ML for a likelihood ratio test (boys grow about 0.3 mm per year faster, p = 0.013) and REML for the reported fit, then ran a MAR experiment showing why the analysis model must use the variables that drive missingness.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Exit questions (do these before you leave)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Your collaborator says: “I’ll just run <code>lm()</code> on the long data; with 108 rows the standard errors will be fine.” What one thing do you check about a covariate before predicting whether its OLS SE is too small or too large?</li>
+<li>You want to compare <code>distance ~ age</code> with <code>distance ~ age + gender</code> by LRT using <code>gls()</code>. What single argument must you add to both calls?</li>
+<li>A child misses a visit because the previous visit’s recorded value exceeded a referral threshold. MCAR, MAR, or MNAR?</li>
+</ol>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Take it home
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>This page stays online. Your edits live only in your browser tab, so copy any code you want to keep into your own notes or an R script before closing.</li>
+<li>To rerun everything locally: download <a href="HandsOn_Session1.R" download="HandsOn_Session1.R">HandsOn_Session1.R</a>. It installs the four packages if needed, downloads <code>dental.txt</code> on first run, and contains every follow-along cell, exercise prompt, and solution.</li>
+</ul>
+</div>
+</div>
+
+
+<script type="webr-data">
+eyJvcHRpb25zIjp7ImJhc2VVcmwiOiJodHRwczovL3dlYnIuci13YXNtLm9yZy92MC42LjAvIn0sInBhY2thZ2VzIjp7InBrZ3MiOlsiZXZhbHVhdGUiLCJrbml0ciIsImh0bWx0b29scyIsImRwbHlyIiwidGlkeXIiLCJnZ3Bsb3QyIiwibmxtZSJdLCJyZXBvcyI6W119LCJyZW5kZXJfZGYiOiJkZWZhdWx0In0=
+</script>
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W3siY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xNyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTc7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xNyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzE3ID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTctY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0xNy1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8xNyA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTcsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xNiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTY7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xNiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzE2ID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTYtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwid2Vici0xNi1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF93ZWJyX3ZhbHVlXzE2ID0gd2ViUk9qcy5wcm9jZXNzKF93ZWJyX2VkaXRvcl8xNiwge30pO1xuX3dlYnJfZmVlZGJhY2tfMTYgPSB7XG4gIGNvbnN0IHsgV2ViUkdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBXZWJSR3JhZGVyKF93ZWJyX3ZhbHVlXzE2LmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xNSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTU7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xNSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzE1ID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTUtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0xNS1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8xNSA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTUsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xNCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTQ7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xNCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzE0ID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTQtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0xNC1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8xNCA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTQsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xMyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTM7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xMyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzEzID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTMtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0xMy1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8xMyA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTMsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTI7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzEyID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTItY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICAvLyBEZWZhdWx0IGV4ZXJjaXNlIGNvbmZpZ3VyYXRpb25cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oXG4gICAge1xuICAgICAgaWQ6IFwid2Vici0xMi1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF93ZWJyX3ZhbHVlXzEyID0gd2ViUk9qcy5wcm9jZXNzKF93ZWJyX2VkaXRvcl8xMiwge30pO1xuX3dlYnJfZmVlZGJhY2tfMTIgPSB7XG4gIGNvbnN0IHsgV2ViUkdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBXZWJSR3JhZGVyKF93ZWJyX3ZhbHVlXzEyLmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xMSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTE7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xMSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzExID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTEtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0xMS1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8xMSA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTEsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0xMCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMTA7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xMCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzEwID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMTAtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0xMC1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8xMCA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMTAsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC05IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoie1xuICAvLyBXYWl0IGZvciBvdXRwdXQgdG8gYmUgd3JpdHRlbiB0byB0aGUgRE9NLCB0aGVuIHRyaWdnZXIgd2lkZ2V0IHJlbmRlcmluZ1xuICBhd2FpdCBfd2Vicl92YWx1ZV85O1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItOSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzkgPSB7XG4gIGNvbnN0IHsgV2ViUkV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwid2Vici05LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcIndlYnItOS1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF93ZWJyX3ZhbHVlXzkgPSB3ZWJST2pzLnByb2Nlc3MoX3dlYnJfZWRpdG9yXzksIHt9KTtcbl93ZWJyX2ZlZWRiYWNrXzkgPSB7XG4gIGNvbnN0IHsgV2ViUkdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBXZWJSR3JhZGVyKF93ZWJyX3ZhbHVlXzkuZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6IndlYnItd2lkZ2V0LTgiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJ7XG4gIC8vIFdhaXQgZm9yIG91dHB1dCB0byBiZSB3cml0dGVuIHRvIHRoZSBET00sIHRoZW4gdHJpZ2dlciB3aWRnZXQgcmVuZGVyaW5nXG4gIGF3YWl0IF93ZWJyX3ZhbHVlXzg7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici04IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfd2Vicl9lZGl0b3JfOCA9IHtcbiAgY29uc3QgeyBXZWJSRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ3ZWJyLTgtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici04LWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFdlYlJFeGVyY2lzZUVkaXRvcih3ZWJST2pzLndlYlJQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcblxuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbl93ZWJyX3ZhbHVlXzggPSB3ZWJST2pzLnByb2Nlc3MoX3dlYnJfZWRpdG9yXzgsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC03IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoie1xuICAvLyBXYWl0IGZvciBvdXRwdXQgdG8gYmUgd3JpdHRlbiB0byB0aGUgRE9NLCB0aGVuIHRyaWdnZXIgd2lkZ2V0IHJlbmRlcmluZ1xuICBhd2FpdCBfd2Vicl92YWx1ZV83O1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItNyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzcgPSB7XG4gIGNvbnN0IHsgV2ViUkV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwid2Vici03LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgLy8gRGVmYXVsdCBleGVyY2lzZSBjb25maWd1cmF0aW9uXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKFxuICAgIHtcbiAgICAgIGlkOiBcIndlYnItNy1jb250ZW50c1wiLFxuICAgICAgZW52aXI6IGBleGVyY2lzZS1lbnYtJHtibG9jay5hdHRyLmV4ZXJjaXNlfWAsXG4gICAgICBlcnJvcjogZmFsc2UsXG4gICAgICBjYXB0aW9uOiAnRXhlcmNpc2UnLFxuICAgIH0sXG4gICAgYmxvY2suYXR0clxuICApO1xuXG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxudmlld29mIF93ZWJyX3ZhbHVlXzcgPSB3ZWJST2pzLnByb2Nlc3MoX3dlYnJfZWRpdG9yXzcsIHt9KTtcbl93ZWJyX2ZlZWRiYWNrXzcgPSB7XG4gIGNvbnN0IHsgV2ViUkdyYWRlciB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3QgZW1wdHlGZWVkYmFjayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpO1xuXG4gIGNvbnN0IGdyYWRlciA9IG5ldyBXZWJSR3JhZGVyKF93ZWJyX3ZhbHVlXzcuZXZhbHVhdG9yKTtcbiAgY29uc3QgZmVlZGJhY2sgPSBhd2FpdCBncmFkZXIuZ3JhZGVFeGVyY2lzZSgpO1xuICBpZiAoIWZlZWRiYWNrKSByZXR1cm4gZW1wdHlGZWVkYmFjaztcbiAgcmV0dXJuIGZlZWRiYWNrO1xufVxuIn0seyJjZWxsTmFtZSI6IndlYnItd2lkZ2V0LTYiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJ7XG4gIC8vIFdhaXQgZm9yIG91dHB1dCB0byBiZSB3cml0dGVuIHRvIHRoZSBET00sIHRoZW4gdHJpZ2dlciB3aWRnZXQgcmVuZGVyaW5nXG4gIGF3YWl0IF93ZWJyX3ZhbHVlXzY7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici02IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfd2Vicl9lZGl0b3JfNiA9IHtcbiAgY29uc3QgeyBXZWJSRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ3ZWJyLTYtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici02LWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFdlYlJFeGVyY2lzZUVkaXRvcih3ZWJST2pzLndlYlJQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcblxuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbl93ZWJyX3ZhbHVlXzYgPSB3ZWJST2pzLnByb2Nlc3MoX3dlYnJfZWRpdG9yXzYsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC01IiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoie1xuICAvLyBXYWl0IGZvciBvdXRwdXQgdG8gYmUgd3JpdHRlbiB0byB0aGUgRE9NLCB0aGVuIHRyaWdnZXIgd2lkZ2V0IHJlbmRlcmluZ1xuICBhd2FpdCBfd2Vicl92YWx1ZV81O1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItNSIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzUgPSB7XG4gIGNvbnN0IHsgV2ViUkV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwid2Vici01LWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHdlYnItNS1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV81ID0gd2ViUk9qcy5wcm9jZXNzKF93ZWJyX2VkaXRvcl81LCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoid2Vici13aWRnZXQtNCIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfNDtcbiAgaWYgKHdpbmRvdy5IVE1MV2lkZ2V0cykge1xuICAgIHdpbmRvdy5IVE1MV2lkZ2V0cy5zdGF0aWNSZW5kZXIoKTtcbiAgfVxuICBpZiAod2luZG93LlBhZ2VkVGFibGVEb2MpIHtcbiAgICB3aW5kb3cuUGFnZWRUYWJsZURvYy5pbml0QWxsKCk7XG4gIH1cbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLTQiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF93ZWJyX2VkaXRvcl80ID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItNC1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIC8vIERlZmF1bHQgZXhlcmNpc2UgY29uZmlndXJhdGlvblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbihcbiAgICB7XG4gICAgICBpZDogXCJ3ZWJyLTQtY29udGVudHNcIixcbiAgICAgIGVudmlyOiBgZXhlcmNpc2UtZW52LSR7YmxvY2suYXR0ci5leGVyY2lzZX1gLFxuICAgICAgZXJyb3I6IGZhbHNlLFxuICAgICAgY2FwdGlvbjogJ0V4ZXJjaXNlJyxcbiAgICB9LFxuICAgIGJsb2NrLmF0dHJcbiAgKTtcblxuICBjb25zdCBlZGl0b3IgPSBuZXcgV2ViUkV4ZXJjaXNlRWRpdG9yKHdlYlJPanMud2ViUlByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbnZpZXdvZiBfd2Vicl92YWx1ZV80ID0gd2ViUk9qcy5wcm9jZXNzKF93ZWJyX2VkaXRvcl80LCB7fSk7XG5fd2Vicl9mZWVkYmFja180ID0ge1xuICBjb25zdCB7IFdlYlJHcmFkZXIgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IGVtcHR5RmVlZGJhY2sgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTtcblxuICBjb25zdCBncmFkZXIgPSBuZXcgV2ViUkdyYWRlcihfd2Vicl92YWx1ZV80LmV2YWx1YXRvcik7XG4gIGNvbnN0IGZlZWRiYWNrID0gYXdhaXQgZ3JhZGVyLmdyYWRlRXhlcmNpc2UoKTtcbiAgaWYgKCFmZWVkYmFjaykgcmV0dXJuIGVtcHR5RmVlZGJhY2s7XG4gIHJldHVybiBmZWVkYmFjaztcbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0zIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldFF1aWV0Iiwic291cmNlIjoie1xuICAvLyBXYWl0IGZvciBvdXRwdXQgdG8gYmUgd3JpdHRlbiB0byB0aGUgRE9NLCB0aGVuIHRyaWdnZXIgd2lkZ2V0IHJlbmRlcmluZ1xuICBhd2FpdCBfd2Vicl92YWx1ZV8zO1xuICBpZiAod2luZG93LkhUTUxXaWRnZXRzKSB7XG4gICAgd2luZG93LkhUTUxXaWRnZXRzLnN0YXRpY1JlbmRlcigpO1xuICB9XG4gIGlmICh3aW5kb3cuUGFnZWRUYWJsZURvYykge1xuICAgIHdpbmRvdy5QYWdlZFRhYmxlRG9jLmluaXRBbGwoKTtcbiAgfVxufVxuIn0seyJjZWxsTmFtZSI6IndlYnItMyIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXQiLCJzb3VyY2UiOiJ2aWV3b2YgX3dlYnJfZWRpdG9yXzMgPSB7XG4gIGNvbnN0IHsgV2ViUkV4ZXJjaXNlRWRpdG9yLCBiNjREZWNvZGUgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG4gIGNvbnN0IHNjcmlwdENvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwid2Vici0zLWNvbnRlbnRzXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgYmxvY2sgPSBKU09OLnBhcnNlKGI2NERlY29kZShzY3JpcHRDb250ZW50KSk7XG5cbiAgY29uc3Qgb3B0aW9ucyA9IE9iamVjdC5hc3NpZ24oeyBpZDogYHdlYnItMy1jb250ZW50c2AgfSwgYmxvY2suYXR0cik7XG4gIGNvbnN0IGVkaXRvciA9IG5ldyBXZWJSRXhlcmNpc2VFZGl0b3Iod2ViUk9qcy53ZWJSUHJvbWlzZSwgYmxvY2suY29kZSwgb3B0aW9ucyk7XG5cbiAgcmV0dXJuIGVkaXRvci5jb250YWluZXI7XG59XG5fd2Vicl92YWx1ZV8zID0gd2ViUk9qcy5wcm9jZXNzKF93ZWJyX2VkaXRvcl8zLCB7fSk7XG4ifSx7ImNlbGxOYW1lIjoid2Vici13aWRnZXQtMiIsImlubGluZSI6ZmFsc2UsIm1ldGhvZE5hbWUiOiJpbnRlcnByZXRRdWlldCIsInNvdXJjZSI6IntcbiAgLy8gV2FpdCBmb3Igb3V0cHV0IHRvIGJlIHdyaXR0ZW4gdG8gdGhlIERPTSwgdGhlbiB0cmlnZ2VyIHdpZGdldCByZW5kZXJpbmdcbiAgYXdhaXQgX3dlYnJfdmFsdWVfMjtcbiAgaWYgKHdpbmRvdy5IVE1MV2lkZ2V0cykge1xuICAgIHdpbmRvdy5IVE1MV2lkZ2V0cy5zdGF0aWNSZW5kZXIoKTtcbiAgfVxuICBpZiAod2luZG93LlBhZ2VkVGFibGVEb2MpIHtcbiAgICB3aW5kb3cuUGFnZWRUYWJsZURvYy5pbml0QWxsKCk7XG4gIH1cbn1cbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLTIiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0Iiwic291cmNlIjoidmlld29mIF93ZWJyX2VkaXRvcl8yID0ge1xuICBjb25zdCB7IFdlYlJFeGVyY2lzZUVkaXRvciwgYjY0RGVjb2RlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lO1xuICBjb25zdCBzY3JpcHRDb250ZW50ID0gZG9jdW1lbnQucXVlcnlTZWxlY3Rvcihgc2NyaXB0W3R5cGU9XFxcIndlYnItMi1jb250ZW50c1xcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGJsb2NrID0gSlNPTi5wYXJzZShiNjREZWNvZGUoc2NyaXB0Q29udGVudCkpO1xuXG4gIGNvbnN0IG9wdGlvbnMgPSBPYmplY3QuYXNzaWduKHsgaWQ6IGB3ZWJyLTItY29udGVudHNgIH0sIGJsb2NrLmF0dHIpO1xuICBjb25zdCBlZGl0b3IgPSBuZXcgV2ViUkV4ZXJjaXNlRWRpdG9yKHdlYlJPanMud2ViUlByb21pc2UsIGJsb2NrLmNvZGUsIG9wdGlvbnMpO1xuXG4gIHJldHVybiBlZGl0b3IuY29udGFpbmVyO1xufVxuX3dlYnJfdmFsdWVfMiA9IHdlYlJPanMucHJvY2Vzcyhfd2Vicl9lZGl0b3JfMiwge30pO1xuIn0seyJjZWxsTmFtZSI6IndlYnItd2lkZ2V0LTEiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJ7XG4gIC8vIFdhaXQgZm9yIG91dHB1dCB0byBiZSB3cml0dGVuIHRvIHRoZSBET00sIHRoZW4gdHJpZ2dlciB3aWRnZXQgcmVuZGVyaW5nXG4gIGF3YWl0IF93ZWJyX3ZhbHVlXzE7XG4gIGlmICh3aW5kb3cuSFRNTFdpZGdldHMpIHtcbiAgICB3aW5kb3cuSFRNTFdpZGdldHMuc3RhdGljUmVuZGVyKCk7XG4gIH1cbiAgaWYgKHdpbmRvdy5QYWdlZFRhYmxlRG9jKSB7XG4gICAgd2luZG93LlBhZ2VkVGFibGVEb2MuaW5pdEFsbCgpO1xuICB9XG59XG4ifSx7ImNlbGxOYW1lIjoid2Vici0xIiwiaW5saW5lIjpmYWxzZSwibWV0aG9kTmFtZSI6ImludGVycHJldCIsInNvdXJjZSI6InZpZXdvZiBfd2Vicl9lZGl0b3JfMSA9IHtcbiAgY29uc3QgeyBXZWJSRXhlcmNpc2VFZGl0b3IsIGI2NERlY29kZSB9ID0gd2luZG93Ll9leGVyY2lzZV9vanNfcnVudGltZTtcbiAgY29uc3Qgc2NyaXB0Q29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ3ZWJyLTEtY29udGVudHNcXFwiXWApLnRleHRDb250ZW50O1xuICBjb25zdCBibG9jayA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKHNjcmlwdENvbnRlbnQpKTtcblxuICBjb25zdCBvcHRpb25zID0gT2JqZWN0LmFzc2lnbih7IGlkOiBgd2Vici0xLWNvbnRlbnRzYCB9LCBibG9jay5hdHRyKTtcbiAgY29uc3QgZWRpdG9yID0gbmV3IFdlYlJFeGVyY2lzZUVkaXRvcih3ZWJST2pzLndlYlJQcm9taXNlLCBibG9jay5jb2RlLCBvcHRpb25zKTtcblxuICByZXR1cm4gZWRpdG9yLmNvbnRhaW5lcjtcbn1cbl93ZWJyX3ZhbHVlXzEgPSB3ZWJST2pzLnByb2Nlc3MoX3dlYnJfZWRpdG9yXzEsIHt9KTtcbiJ9LHsiY2VsbE5hbWUiOiJ3ZWJyLXByZWx1ZGUiLCJpbmxpbmUiOmZhbHNlLCJtZXRob2ROYW1lIjoiaW50ZXJwcmV0UXVpZXQiLCJzb3VyY2UiOiJ3ZWJST2pzID0ge1xuICBjb25zdCB7IFdlYlIsIENoYW5uZWxUeXBlIH0gPSB3aW5kb3cuX2V4ZXJjaXNlX29qc19ydW50aW1lLldlYlI7XG4gIGNvbnN0IHtcbiAgICBXZWJSRXZhbHVhdG9yLFxuICAgIFdlYlJFbnZpcm9ubWVudE1hbmFnZXIsXG4gICAgc2V0dXBSLFxuICAgIGI2NERlY29kZSxcbiAgICBjb2xsYXBzZVBhdGhcbiAgfSA9IHdpbmRvdy5fZXhlcmNpc2Vfb2pzX3J1bnRpbWU7XG5cbiAgY29uc3Qgc3RhdHVzQ29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoXCJleGVyY2lzZS1sb2FkaW5nLXN0YXR1c1wiKTtcbiAgY29uc3QgaW5kaWNhdG9yQ29udGFpbmVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoXCJleGVyY2lzZS1sb2FkaW5nLWluZGljYXRvclwiKTtcbiAgaW5kaWNhdG9yQ29udGFpbmVyLmNsYXNzTGlzdC5yZW1vdmUoXCJkLW5vbmVcIik7XG5cbiAgbGV0IHN0YXR1c1RleHQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KFwiZGl2XCIpXG4gIHN0YXR1c1RleHQuY2xhc3NMaXN0ID0gXCJleGVyY2lzZS1sb2FkaW5nLWRldGFpbHNcIjtcbiAgc3RhdHVzVGV4dCA9IHN0YXR1c0NvbnRhaW5lci5hcHBlbmRDaGlsZChzdGF0dXNUZXh0KTtcbiAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBJbml0aWFsaXNlYDtcblxuICAvLyBIb2lzdCBpbmRpY2F0b3Igb3V0IGZyb20gZmluYWwgc2xpZGUgd2hlbiBydW5uaW5nIHVuZGVyIHJldmVhbFxuICBjb25zdCByZXZlYWxTdGF0dXMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKFwiLnJldmVhbCAuZXhlcmNpc2UtbG9hZGluZy1pbmRpY2F0b3JcIik7XG4gIGlmIChyZXZlYWxTdGF0dXMpIHtcbiAgICByZXZlYWxTdGF0dXMucmVtb3ZlKCk7XG4gICAgZG9jdW1lbnQucXVlcnlTZWxlY3RvcihcIi5yZXZlYWwgPiAuc2xpZGVzXCIpLmFwcGVuZENoaWxkKHJldmVhbFN0YXR1cyk7XG4gIH1cblxuICAvLyBNYWtlIGFueSByZXZlYWwgc2xpZGVzIHdpdGggbGl2ZSBjZWxscyBzY3JvbGxhYmxlXG4gIGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoXCIucmV2ZWFsIC5leGVyY2lzZS1jZWxsXCIpLmZvckVhY2goKGVsKSA9PiB7XG4gICAgZWwuY2xvc2VzdCgnc2VjdGlvbi5zbGlkZScpLmNsYXNzTGlzdC5hZGQoXCJzY3JvbGxhYmxlXCIpO1xuICB9KVxuXG4gIC8vIHdlYlIgc3VwcGxlbWVudGFsIGRhdGEgYW5kIG9wdGlvbnNcbiAgY29uc3QgZGF0YUNvbnRlbnQgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yKGBzY3JpcHRbdHlwZT1cXFwid2Vici1kYXRhXFxcIl1gKS50ZXh0Q29udGVudDtcbiAgY29uc3QgZGF0YSA9IEpTT04ucGFyc2UoYjY0RGVjb2RlKGRhdGFDb250ZW50KSk7XG5cbiAgLy8gR3JhYiBsaXN0IG9mIHJlc291cmNlcyB0byBiZSBkb3dubG9hZGVkXG4gIGNvbnN0IGZpbGVzQ29udGVudCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoYHNjcmlwdFt0eXBlPVxcXCJ2ZnMtZmlsZVxcXCJdYCkudGV4dENvbnRlbnQ7XG4gIGNvbnN0IGZpbGVzID0gSlNPTi5wYXJzZShiNjREZWNvZGUoZmlsZXNDb250ZW50KSk7XG5cbiAgLy8gSW5pdGlhbGlzZSB3ZWJSIGFuZCBzZXR1cCBmb3IgUiBjb2RlIGV2YWx1YXRpb25cbiAgbGV0IHdlYlJQcm9taXNlID0gKGFzeW5jICh3ZWJSKSA9PiB7XG4gICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBEb3dubG9hZGluZyB3ZWJSYDtcbiAgICBhd2FpdCB3ZWJSLmluaXQoKTtcblxuICAgIC8vIEluc3RhbGwgcHJvdmlkZWQgbGlzdCBvZiBwYWNrYWdlc1xuICAgIC8vIEVuc3VyZSB3ZWJSIGRlZmF1bHQgcmVwbyBpcyBpbmNsdWRlZFxuICAgIGRhdGEucGFja2FnZXMucmVwb3MucHVzaChcImh0dHBzOi8vcmVwby5yLXdhc20ub3JnXCIpXG4gICAgYXdhaXQgZGF0YS5wYWNrYWdlcy5wa2dzLm1hcCgocGtnKSA9PiAoKSA9PiB7XG4gICAgICBzdGF0dXNUZXh0LnRleHRDb250ZW50ID0gYERvd25sb2FkaW5nIHBhY2thZ2U6ICR7cGtnfWA7XG4gICAgICByZXR1cm4gd2ViUi5ldmFsUlZvaWQoYFxuICAgICAgICB3ZWJyOjppbnN0YWxsKHBrZywgcmVwb3MgPSByZXBvcylcbiAgICAgICAgbGlicmFyeShwa2csIGNoYXJhY3Rlci5vbmx5ID0gVFJVRSlcbiAgICAgIGAsIHsgZW52OiB7XG4gICAgICAgIHBrZzogcGtnLFxuICAgICAgICByZXBvczogZGF0YS5wYWNrYWdlcy5yZXBvcyxcbiAgICAgIH19KTtcbiAgICB9KS5yZWR1Y2UoKGN1ciwgbmV4dCkgPT4gY3VyLnRoZW4obmV4dCksIFByb21pc2UucmVzb2x2ZSgpKTtcblxuICAgIC8vIERvd25sb2FkIGFuZCBpbnN0YWxsIHJlc291cmNlc1xuICAgIGF3YWl0IGZpbGVzLm1hcCgoZmlsZSkgPT4gYXN5bmMgKCkgPT4ge1xuICAgICAgY29uc3QgbmFtZSA9IGZpbGUuc3Vic3RyaW5nKGZpbGUubGFzdEluZGV4T2YoJy8nKSArIDEpO1xuICAgICAgc3RhdHVzVGV4dC50ZXh0Q29udGVudCA9IGBEb3dubG9hZGluZyByZXNvdXJjZTogJHtuYW1lfWA7XG4gICAgICBjb25zdCByZXNwb25zZSA9IGF3YWl0IGZldGNoKGZpbGUpO1xuICAgICAgaWYgKCFyZXNwb25zZS5vaykge1xuICAgICAgICB0aHJvdyBuZXcgRXJyb3IoYENhbid0IGRvd25sb2FkIFxcYCR7ZmlsZX1cXGAuIEVycm9yICR7cmVzcG9uc2Uuc3RhdHVzfTogXCIke3Jlc3BvbnNlLnN0YXR1c1RleHR9XCIuYCk7XG4gICAgICB9XG4gICAgICBjb25zdCBkYXRhID0gYXdhaXQgcmVzcG9uc2UuYXJyYXlCdWZmZXIoKTtcblxuICAgICAgLy8gU3RvcmUgVVJMcyBpbiB0aGUgY3dkIHdpdGhvdXQgYW55IHN1YmRpcmVjdG9yeSBzdHJ1Y3R1cmVcbiAgICAgIGlmIChmaWxlLmluY2x1ZGVzKFwiOi8vXCIpKSB7XG4gICAgICAgIGZpbGUgPSBuYW1lO1xuICAgICAgfVxuXG4gICAgICAvLyBDb2xsYXBzZSBoaWdoZXIgZGlyZWN0b3J5IHN0cnVjdHVyZVxuICAgICAgZmlsZSA9IGNvbGxhcHNlUGF0aChmaWxlKTtcblxuICAgICAgLy8gQ3JlYXRlIGRpcmVjdG9yeSB0cmVlLCBpZ25vcmluZyBcImRpcmVjdG9yeSBleGlzdHNcIiBWRlMgZXJyb3JzXG4gICAgICBjb25zdCBwYXJ0cyA9IGZpbGUuc3BsaXQoJy8nKS5zbGljZSgwLCAtMSk7XG4gICAgICBsZXQgcGF0aCA9ICcnO1xuICAgICAgd2hpbGUgKHBhcnRzLmxlbmd0aCA+IDApIHtcbiAgICAgICAgcGF0aCArPSBwYXJ0cy5zaGlmdCgpICsgJy8nO1xuICAgICAgICBjb25zdCBhbmFseXNpcyA9IGF3YWl0IHdlYlIuRlMuYW5hbHl6ZVBhdGgocGF0aCk7XG4gICAgICAgIGlmICghYW5hbHlzaXMuZXhpc3RzKSB7XG4gICAgICAgICAgdHJ5IHtcbiAgICAgICAgICAgIGF3YWl0IHdlYlIuRlMubWtkaXIocGF0aCk7XG4gICAgICAgICAgfSBjYXRjaCAoZSkge1xuICAgICAgICAgICAgdGhyb3cgbmV3IEVycm9yKGBGaWxlc3lzdGVtIEVycm9yOiBcIiR7ZS5tZXNzYWdlfVwiLmApO1xuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuXG4gICAgICAvLyBXcml0ZSB0aGlzIGZpbGUgdG8gdGhlIFZGU1xuICAgICAgcmV0dXJuIGF3YWl0IHdlYlIuRlMud3JpdGVGaWxlKGZpbGUsIG5ldyBVaW50OEFycmF5KGRhdGEpKTtcbiAgICB9KS5yZWR1Y2UoKGN1ciwgbmV4dCkgPT4gY3VyLnRoZW4obmV4dCksIFByb21pc2UucmVzb2x2ZSgpKTtcblxuICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgSW5zdGFsbGluZyB3ZWJSIHNoaW1zYDtcbiAgICBhd2FpdCB3ZWJSLmV2YWxSVm9pZChgd2Vicjo6c2hpbV9pbnN0YWxsKClgKTtcblxuICAgIHN0YXR1c1RleHQudGV4dENvbnRlbnQgPSBgV2ViUiBlbnZpcm9ubWVudCBzZXR1cGA7XG4gICAgYXdhaXQgc2V0dXBSKHdlYlIsIGRhdGEpO1xuXG4gICAgc3RhdHVzVGV4dC5yZW1vdmUoKTtcbiAgICBpZiAoc3RhdHVzQ29udGFpbmVyLmNoaWxkcmVuLmxlbmd0aCA9PSAwKSB7XG4gICAgICBzdGF0dXNDb250YWluZXIucGFyZW50Tm9kZS5yZW1vdmUoKTtcbiAgICB9XG4gICAgcmV0dXJuIHdlYlI7XG4gIH0pKG5ldyBXZWJSKGRhdGEub3B0aW9ucykpO1xuXG4gIC8vIEtlZXAgdHJhY2sgb2YgaW5pdGlhbCBPSlMgYmxvY2sgcmVuZGVyXG4gIGNvbnN0IHJlbmRlcmVkT2pzID0ge307XG5cbiAgY29uc3QgcHJvY2VzcyA9IGFzeW5jIChjb250ZXh0LCBpbnB1dHMpID0+IHtcbiAgICBjb25zdCB3ZWJSID0gYXdhaXQgd2ViUlByb21pc2U7XG4gICAgY29uc3QgZXZhbHVhdG9yID0gbmV3IFdlYlJFdmFsdWF0b3Iod2ViUiwgY29udGV4dClcbiAgICBhd2FpdCBldmFsdWF0b3IucHJvY2VzcyhpbnB1dHMpO1xuICAgIHJldHVybiBldmFsdWF0b3IuY29udGFpbmVyO1xuICB9XG5cbiAgcmV0dXJuIHtcbiAgICBwcm9jZXNzLFxuICAgIHdlYlJQcm9taXNlLFxuICAgIHJlbmRlcmVkT2pzLFxuICB9O1xufVxuIn1dfQ==
+</script>
+<div id="exercise-loading-indicator" class="exercise-loading-indicator d-none d-flex align-items-center gap-2">
+<div id="exercise-loading-status" class="d-flex gap-2">
+
+</div>
+<div class="spinner-grow spinner-grow-sm">
+
+</div>
+</div>
+<script type="vfs-file">
+WyJkYXRhL2RlbnRhbC50eHQiXQ==
+</script>
+</section>
+
+</main> <!-- /main -->
+<script type="ojs-module-contents">
+eyJjb250ZW50cyI6W119
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../..";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/daviddaiweizhang\.github\.io\/unc-bios664\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<script>
+// "Run all above": fill every earlier code box with its correct code
+// (exercise boxes get their Solution code) and run them, top to bottom.
+(function() {
+  var POLL = 25;          // ms between readiness polls
+  var QUIET = 5;          // consecutive idle polls that mean "settled"
+  var MAX_START = 10000;  // ms to wait for a click to start a run
+  var MAX_RUN = 150000;   // ms cap on a single cell
+  var DNONE = /(^|\s)d-none(\s|$)/;
+
+  function allCells() {
+    return Array.prototype.slice.call(
+      document.querySelectorAll("div.cell[data-caption]"));
+  }
+  function liveCells() {
+    return allCells().filter(function(c) { return c.querySelector(".cm-content"); });
+  }
+  function viewOf(cell) {
+    return cell.querySelector(".cm-content").cmView.view;
+  }
+  // The cell's own source, decoded from the payload the extension embeds.
+  // Reading it here (rather than from the editor at startup) means a
+  // student's edits can never be mistaken for the original code.
+  function sourceCode(cell) {
+    var s = cell.querySelector('script[type$="-contents"]');
+    if (!s) return null;
+    try {
+      var bin = atob(s.textContent.replace(/\s+/g, ""));
+      var bytes = Uint8Array.from(bin, function(ch) { return ch.charCodeAt(0); });
+      return JSON.parse(new TextDecoder().decode(bytes)).code;
+    } catch (e) { return null; }
+  }
+  // Exercise cells carry data-exercise, so the solution is matched by id
+  // rather than by document position.
+  function solutionCode(cell) {
+    var id = cell.getAttribute("data-exercise");
+    if (!id) return null;
+    var code = document.querySelector(
+      '.exercise-solution[data-exercise="' + id + '"] pre code');
+    return code ? code.textContent.replace(/\n$/, "") : null;
+  }
+  function correctCode(cell) {
+    return solutionCode(cell) || sourceCode(cell);
+  }
+
+  // Completion tracking. A cell's eval indicator loses d-none while it
+  // runs and regains it when it stops, but those windows can be under
+  // 20 ms, so polling the class misses them entirely. A MutationObserver
+  // sees every transition, and counting the hidden -> shown ones gives a
+  // monotone tally of how many times this cell has started running.
+  var seen = new WeakMap();
+  function track(cell) {
+    if (seen.has(cell)) return seen.get(cell);
+    var spinner = cell.querySelector(".exercise-editor-eval-indicator");
+    var s = { starts: 0, spinner: spinner };
+    seen.set(cell, s);
+    if (spinner) {
+      new MutationObserver(function(recs) {
+        recs.forEach(function(r) {
+          if (DNONE.test(r.oldValue || "")) s.starts++;
+        });
+      }).observe(spinner, { attributes: true, attributeFilter: ["class"],
+                            attributeOldValue: true });
+    }
+    return s;
+  }
+  function anyBusy() {
+    return Array.prototype.some.call(
+      document.querySelectorAll(".exercise-editor-eval-indicator"),
+      function(sp) { return !DNONE.test(sp.getAttribute("class") || ""); });
+  }
+  // Run one cell and resolve once it has both started and gone quiet.
+  // Exercise cells evaluate twice per click, so we require a run of
+  // consecutive idle polls rather than the first idle reading.
+  function runCell(cell) {
+    var s = track(cell);
+    var before = s.starts;
+    var btn = cell.querySelector('a[aria-label="Run Code"]');
+    if (btn) btn.click();
+    return new Promise(function(resolve) {
+      var t0 = Date.now(), quiet = 0;
+      (function poll() {
+        var waited = Date.now() - t0;
+        var began = !s.spinner || s.starts > before;
+        quiet = (began && !anyBusy()) ? quiet + 1 : 0;
+        if (quiet >= QUIET || waited > MAX_RUN ||
+            (!began && waited > MAX_START)) { resolve(); return; }
+        setTimeout(poll, POLL);
+      })();
+    });
+  }
+
+  var running = false;
+  function setBusy(on) {
+    running = on;
+    Array.prototype.forEach.call(
+      document.querySelectorAll('a[aria-label="Run all above"]'),
+      function(a) { a.classList.toggle("disabled", on); });
+  }
+  async function runAllAbove(cell) {
+    if (running) return;
+    setBusy(true);
+    var label = cell.querySelector(
+      'a[aria-label="Run all above"] .btn-label-exercise-editor');
+    var text = label ? label.textContent : null;
+    try {
+      var cells = liveCells();
+      var stop = cells.indexOf(cell);
+      for (var j = 0; j < stop; j++) {
+        if (label) label.textContent = "Running " + (j + 1) + "/" + stop;
+        var code = correctCode(cells[j]);
+        if (code !== null) {
+          var v = viewOf(cells[j]);
+          v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: code } });
+        }
+        await runCell(cells[j]);
+      }
+    } finally {
+      if (label) label.textContent = text;
+      setBusy(false);
+    }
+  }
+
+  function addButton(cell) {
+    var startOver = cell.querySelector('a[aria-label="Start Over"]');
+    var grp = startOver ? startOver.parentElement
+                        : cell.querySelector(".btn-group-exercise-editor");
+    if (!grp || grp.querySelector('[aria-label="Run all above"]')) return;
+    var a = document.createElement("a");
+    a.className = "d-flex align-items-center gap-1 btn btn-exercise-editor " +
+                  "btn-outline-dark btn-sm text-nowrap";
+    a.setAttribute("role", "button");
+    a.tabIndex = 0;
+    a.setAttribute("aria-label", "Run all above");
+    var span = document.createElement("span");
+    span.className = "btn-label-exercise-editor";
+    span.textContent = "Run all above";
+    a.appendChild(span);
+    a.addEventListener("click", function() { runAllAbove(cell); });
+    grp.prepend(a);
+  }
+  // Only offer the button once webR is live: every cell has an editor
+  // and every Run Code button has come out of its disabled state.
+  function init() {
+    var cells = liveCells();
+    var runs = document.querySelectorAll('a[aria-label="Run Code"]');
+    var ready = cells.length === allCells().length && runs.length === cells.length &&
+      Array.prototype.every.call(runs, function(r) {
+        return !r.classList.contains("disabled");
+      });
+    if (!ready) { setTimeout(init, 250); return; }
+    cells.forEach(function(c, i) {
+      track(c);
+      if (i > 0) addButton(c);
+    });
+  }
+  init();
+})();
+</script>
+
+
+
+
+</body></html>
