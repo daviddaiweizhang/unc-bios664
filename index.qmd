@@ -557,8 +557,7 @@ Look at the `ratio` column.
 
 1. Which coefficient's standard error got **larger** once correlation was
    modeled, and which got **smaller**?
-2. Explain both directions. (Hint: gender is constant within a child; age varies
-   within a child.)
+2. Explain both directions.
 3. Complete the sentence: "Ignoring positive within-subject correlation makes
    OLS standard errors ______."
 :::
